@@ -11,89 +11,89 @@ import (
 )
 
 func BenchmarkPLoggingBase(b *testing.B) {
-	logger := New(ioutil.Discard, Lbase)
-	lm := &LogMap{"x": 42}
+	logger := New(ioutil.Discard, 0)
+	m := Map{"x": 42}
 	b.ResetTimer()
 	b.RunParallel(func(pb *testing.PB) {
 		for pb.Next() {
-			logger.Info("this is a test: %s", lm)
+			logger.Infom("this is a test: %s", m)
 		}
 	})
 }
 
 func BenchmarkPLoggingBaseSortedKeys(b *testing.B) {
-	logger := New(ioutil.Discard, Lsort)
-	lm := &LogMap{"x": 42}
+	logger := New(ioutil.Discard, Lstd|Lsort)
+	m := Map{"x": 42}
 	b.ResetTimer()
 	b.RunParallel(func(pb *testing.PB) {
 		for pb.Next() {
-			logger.Info("this is a test: %s", lm)
+			logger.Infom("this is a test: %s", m)
 		}
 	})
 }
 
 func BenchmarkPLoggingDatetime(b *testing.B) {
-	logger := New(ioutil.Discard, Ldatetime)
-	lm := &LogMap{"x": 42}
+	logger := New(ioutil.Discard, Lstd)
+	m := Map{"x": 42}
 	b.ResetTimer()
 	b.RunParallel(func(pb *testing.PB) {
 		for pb.Next() {
-			logger.Info("this is a test: %s", lm)
+			logger.Infom("this is a test: %s", m)
 		}
 	})
 }
 
 func BenchmarkPLoggingShortfile(b *testing.B) {
-	logger := New(ioutil.Discard, Lshortfile)
-	lm := &LogMap{"x": 42}
+	logger := New(ioutil.Discard, Lstd|Lshortfile)
+	m := Map{"x": 42}
 	b.ResetTimer()
 	b.RunParallel(func(pb *testing.PB) {
 		for pb.Next() {
-			logger.Info("this is a test: %s", lm)
+			logger.Infom("this is a test: %s", m)
 		}
 	})
 }
 
 func BenchmarkPLoggingLongfile(b *testing.B) {
-	logger := New(ioutil.Discard, Llongfile)
-	lm := &LogMap{"x": 42}
+	logger := New(ioutil.Discard, Lstd|Llongfile)
+	m := Map{"x": 42}
 	b.ResetTimer()
 	b.RunParallel(func(pb *testing.PB) {
 		for pb.Next() {
-			logger.Info("this is a test: %s", lm)
+			logger.Infom("this is a test: %s", m)
 		}
 	})
 }
 
 func BenchmarkPLoggingDebugWithEnabled(b *testing.B) {
-	logger := New(ioutil.Discard, Ldebug)
-	lm := &LogMap{"x": 42}
+	logger := New(ioutil.Discard, Lstd|Ldebug)
+	m := Map{"x": 42}
 	b.ResetTimer()
 	b.RunParallel(func(pb *testing.PB) {
 		for pb.Next() {
-			logger.Debug("this is a test: %s", lm)
+			logger.Debugm("this is a test: %s", m)
 		}
 	})
 }
 
 func BenchmarkPLoggingDebugWithDisabled(b *testing.B) {
-	logger := New(ioutil.Discard, Lbase)
-	lm := &LogMap{"x": 42}
+	logger := New(ioutil.Discard, 0)
+	m := Map{"x": 42}
 	b.ResetTimer()
 	b.RunParallel(func(pb *testing.PB) {
 		for pb.Next() {
-			logger.Debug("this is a test: %s", lm)
+			logger.Debugm("this is a test: %s", m)
 		}
 	})
 }
 
 func BenchmarkPLoggingLikeStdlib(b *testing.B) {
-	logger := New(ioutil.Discard, Ldatetime)
-	lm := &LogMap{"x": 42}
+	logger := New(ioutil.Discard, Lstd)
+	m := Map{"x": 42}
 	b.ResetTimer()
 	b.RunParallel(func(pb *testing.PB) {
 		for pb.Next() {
-			logger.Info("this is a test: %s", lm)
+			logger.Infom("this is a test: %s", m)
 		}
 	})
 }

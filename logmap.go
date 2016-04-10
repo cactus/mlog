@@ -9,93 +9,77 @@ import (
 	"fmt"
 	"io"
 	"sort"
+	"strings"
 )
 
-/*
-// for the love of all that is sane, you probably
-// don't really want to use this. only "safe"
-// when you *know* that the []byte will never be
-// mutated, and you don't care about holding onto the ref
-// beyond the string owner lifetime
-func stringtoslicebytetmp(s *string) []byte {
-	sh := (*reflect.SliceHeader)(unsafe.Pointer(s))
-	sh.Len = len(*s)
-	sh.Cap = sh.Len
-	return *(*[]byte)(unsafe.Pointer(sh))
-}
-*/
+// Map is a key value element used to pass
+// data to the Logger functions.
+type Map map[string]interface{}
 
-type LogMap map[string]interface{}
-
-func (lm *LogMap) Keys() []string {
-	var keys []string
-	for k := range *lm {
+// Return an unsorted list of keys in the Map as a []string.
+func (m Map) Keys() []string {
+	keys := make([]string, 0, len(m))
+	for k := range m {
 		keys = append(keys, k)
 	}
 	return keys
 }
 
-func (lm *LogMap) WriteTo(w io.Writer) (int64, error) {
-	i := 0
-	ilen := len(*lm)
-	for k, v := range *lm {
-		/*
-			// this is a bit grotesque, but it avoids
-			// an allocation. Since write will not mutate
-			// the string, this *should* be safe.
-			p := stringtoslicebytetmp(&k)
-			w.Write(p)
-			p = nil
-		*/
-		w.Write([]byte(k))
-		w.Write(EQUAL_QUOTE)
-		fmt.Fprint(w, v)
-		w.Write(QUOTE)
-		if i < ilen-1 {
-			w.Write(SPACE)
+// WriteTo writes an unsorted string representation of
+// the Map's key value pairs to w.
+func (m Map) WriteTo(w io.Writer) (int64, error) {
+	first := true
+	for k, v := range m {
+		if first {
+			first = false
+		} else {
+			w.Write(i_SPACE)
 		}
-		i++
+
+		w.Write([]byte(strings.Replace(k, " ", "_", -1)))
+		w.Write(i_EQUAL_QUOTE)
+		fmt.Fprint(w, v)
+		w.Write(i_QUOTE)
 	}
 	// int64 to be compat with io.WriterTo
-	return int64(ilen), nil
+	return int64(len(m)), nil
 }
 
-func (lm *LogMap) SortedWriteTo(w io.Writer) (int64, error) {
-	keys := lm.Keys()
+// SortedWriteTo writes a sorted string representation of
+// the Map's key value pairs to w.
+func (m Map) SortedWriteTo(w io.Writer) (int64, error) {
+	keys := m.Keys()
 	sort.Strings(keys)
 
-	i := 0
-	ilen := len(keys)
+	first := true
 	for _, k := range keys {
-		/*
-			// this is a bit grotesque, but it avoids
-			// an allocation. Since write will not mutate
-			// the string, this *should* be safe.
-			p := stringtoslicebytetmp(&k)
-			w.Write(p)
-			p = nil
-		*/
-		w.Write([]byte(k))
-		w.Write(EQUAL_QUOTE)
-		fmt.Fprint(w, (*lm)[k])
-		w.Write(QUOTE)
-		if i < ilen-1 {
-			w.Write(SPACE)
+		if first {
+			first = false
+		} else {
+			w.Write(i_SPACE)
 		}
-		i++
+
+		w.Write([]byte(strings.Replace(k, " ", "_", -1)))
+		w.Write(i_EQUAL_QUOTE)
+		fmt.Fprint(w, m[k])
+		w.Write(i_QUOTE)
 	}
 	// int64 to be compat with WriterTo above
-	return int64(ilen), nil
+	return int64(len(m)), nil
 }
 
-func (lm *LogMap) String() string {
+// String returns an unsorted string representation of
+// the Map's key value pairs.
+func (m Map) String() string {
 	var buf bytes.Buffer
-	lm.WriteTo(&buf)
+	m.WriteTo(&buf)
 	return buf.String()
 }
 
-func (lm *LogMap) SortedString() string {
+// String returns a sorted string representation of
+// the Map's key value pairs.
+func (m Map) SortedString() string {
 	var buf bytes.Buffer
-	lm.SortedWriteTo(&buf)
+	m.SortedWriteTo(&buf)
 	return buf.String()
 }

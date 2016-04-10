@@ -22,13 +22,13 @@ func (h *iDate) String() string {
 	stamp := h.dateValue.Load()
 	if stamp == nil {
 		h.Update()
-		return time.Now().UTC().Format(timeFormat)
+		return time.Now().Format(timeFormat)
 	}
 	return stamp.(string)
 }
 
 func (h *iDate) Update() {
-	h.dateValue.Store(time.Now().UTC().Format(timeFormat))
+	h.dateValue.Store(time.Now().Format(timeFormat))
 }
 
 func newiDate() *iDate {
