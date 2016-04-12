@@ -30,6 +30,7 @@ var (
 	i_SPACE       = []byte{' '}
 	i_COLON       = []byte{':'}
 	i_QUOTE       = []byte{'"'}
+	i_EQUAL       = []byte{'='}
 	i_EQUAL_QUOTE = []byte{'=', '"'}
 	i_QUOTE_SPACE = []byte{'"', ' '}
 )
