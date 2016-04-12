@@ -87,7 +87,9 @@ func (l *Logger) Output(depth int, level string, message string, data ...Map) {
 		buf.Write(i_QUOTE_SPACE)
 	}
 
-	buf.WriteString(`msg="`)
+	if flags != 0 {
+		buf.WriteString(`msg="`)
+	}
 	// as a kindness, strip any newlines off the end of the string
 	for i := len(message) - 1; i > 0; i-- {
 		if message[i] == '\n' {
@@ -97,7 +99,9 @@ func (l *Logger) Output(depth int, level string, message string, data ...Map) {
 		}
 	}
 	buf.WriteString(message)
-	buf.Write(i_QUOTE)
+	if flags != 0 {
+		buf.Write(i_QUOTE)
+	}
 
 	if len(data) > 0 {
 		for _, e := range data {
