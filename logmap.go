@@ -5,11 +5,16 @@
 package mlog
 
 import (
-	"bytes"
 	"fmt"
 	"io"
 	"sort"
-	"strings"
+)
+
+var (
+	c_Q = []byte{'\\', '"'}
+	c_T = []byte{'\\', 't'}
+	c_R = []byte{'\\', 'r'}
+	c_N = []byte{'\\', 'n'}
 )
 
 // Map is a key value element used to pass
@@ -25,6 +30,7 @@ func (m Map) Keys() []string {
 	return keys
 }
 
+/*
 // WriteTo writes an unsorted string representation of
 // the Map's key value pairs to w.
 func (m Map) WriteTo(w io.Writer) (int64, error) {
@@ -36,15 +42,72 @@ func (m Map) WriteTo(w io.Writer) (int64, error) {
 			w.Write(i_SPACE)
 		}
 
-		w.Write([]byte(strings.Replace(k, " ", "_", -1)))
+		io.WriteString(w, k)
 		w.Write(i_EQUAL_QUOTE)
 		fmt.Fprint(w, v)
+        // io.WriteString(w, strconv.Quote(fmt.Sprint(v)))
 		w.Write(i_QUOTE)
 	}
 	// int64 to be compat with io.WriterTo
 	return int64(len(m)), nil
 }
+*/
 
+// WriteTo writes an unsorted string representation of
+// the Map's key value pairs to w.
+func (m Map) WriteTo(w io.Writer) (int64, error) {
+	// scratch buffer for intermediate writes
+	buf := bufPool.Get()
+	defer bufPool.Put(buf)
+
+	first := true
+	for k, v := range m {
+		if first {
+			first = false
+		} else {
+			w.Write(i_SPACE)
+		}
+
+		io.WriteString(w, k)
+		w.Write(i_EQUAL_QUOTE)
+
+		fmt.Fprint(buf, v)
+		b := buf.Bytes()
+		blen := buf.Len()
+		p := 0
+		for i := 0; i < blen; i++ {
+			switch b[i] {
+			case '"':
+				w.Write(b[p:i])
+				w.Write(c_Q)
+				p = i + 1
+			case '\t':
+				w.Write(b[p:i])
+				w.Write(c_T)
+				p = i + 1
+			case '\r':
+				w.Write(b[p:i])
+				w.Write(c_R)
+				p = i + 1
+			case '\n':
+				w.Write(b[p:i])
+				w.Write(c_N)
+				p = i + 1
+			}
+		}
+		if p < blen {
+			w.Write(b[p:blen])
+		}
+
+		w.Write(i_QUOTE)
+		// truncate intermediate buf so it is clean for next loop
+		buf.Truncate(0)
+	}
+	// int64 to be compat with io.WriterTo
+	return int64(len(m)), nil
+}
+
+/*
 // SortedWriteTo writes a sorted string representation of
 // the Map's key value pairs to w.
 func (m Map) SortedWriteTo(w io.Writer) (int64, error) {
@@ -59,10 +122,68 @@ func (m Map) SortedWriteTo(w io.Writer) (int64, error) {
 			w.Write(i_SPACE)
 		}
 
-		w.Write([]byte(strings.Replace(k, " ", "_", -1)))
+		io.WriteString(w, k)
 		w.Write(i_EQUAL_QUOTE)
 		fmt.Fprint(w, m[k])
 		w.Write(i_QUOTE)
+	}
+	// int64 to be compat with WriterTo above
+	return int64(len(m)), nil
+}
+*/
+
+// SortedWriteTo writes a sorted string representation of
+// the Map's key value pairs to w.
+func (m Map) SortedWriteTo(w io.Writer) (int64, error) {
+	// scratch buffer for intermediate writes
+	buf := bufPool.Get()
+	defer bufPool.Put(buf)
+
+	keys := m.Keys()
+	sort.Strings(keys)
+
+	first := true
+	for _, k := range keys {
+		if first {
+			first = false
+		} else {
+			w.Write(i_SPACE)
+		}
+
+		io.WriteString(w, k)
+		w.Write(i_EQUAL_QUOTE)
+
+		fmt.Fprint(buf, m[k])
+		b := buf.Bytes()
+		blen := buf.Len()
+		p := 0
+		for i := 0; i < blen; i++ {
+			switch b[i] {
+			case '"':
+				w.Write(b[p:i])
+				w.Write(c_Q)
+				p = i + 1
+			case '\t':
+				w.Write(b[p:i])
+				w.Write(c_T)
+				p = i + 1
+			case '\r':
+				w.Write(b[p:i])
+				w.Write(c_R)
+				p = i + 1
+			case '\n':
+				w.Write(b[p:i])
+				w.Write(c_N)
+				p = i + 1
+			}
+		}
+		if p < blen {
+			w.Write(b[p:blen])
+		}
+
+		w.Write(i_QUOTE)
+		// truncate intermediate buf so it is clean for next loop
+		buf.Truncate(0)
 	}
 	// int64 to be compat with WriterTo above
 	return int64(len(m)), nil
@@ -71,15 +192,17 @@ func (m Map) SortedWriteTo(w io.Writer) (int64, error) {
 // String returns an unsorted string representation of
 // the Map's key value pairs.
 func (m Map) String() string {
-	var buf bytes.Buffer
-	m.WriteTo(&buf)
+	buf := bufPool.Get()
+	defer bufPool.Put(buf)
+	m.WriteTo(buf)
 	return buf.String()
 }
 
 // String returns a sorted string representation of
 // the Map's key value pairs.
 func (m Map) SortedString() string {
-	var buf bytes.Buffer
-	m.SortedWriteTo(&buf)
+	buf := bufPool.Get()
+	defer bufPool.Put(buf)
+	m.SortedWriteTo(buf)
 	return buf.String()
 }

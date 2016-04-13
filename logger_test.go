@@ -55,14 +55,14 @@ var infoTests = []tester{
 	},
 	{
 		"info",
-		`level="I" msg="test one" haz_space="such tests" x="1" y="2" z="3"`,
+		`level="I" msg="test one" haz_string="such tests" x="1" y="2" z="3"`,
 		"test one",
 		[]Map{
 			Map{
-				"x":         1,
-				"y":         2,
-				"z":         3,
-				"haz space": "such tests",
+				"x":          1,
+				"y":          2,
+				"z":          3,
+				"haz_string": "such tests",
 			},
 		},
 	},
