@@ -146,7 +146,7 @@ func printUint64Bits(u uint64) string {
 func TestFlags(t *testing.T) {
 	logger := New(ioutil.Discard, 0)
 
-	expected := Ldatetime | Ldebug
+	expected := Ltimestamp | Ldebug
 	logger.SetFlags(expected)
 	flags := logger.Flags()
 	if flags&(expected) == 0 {
@@ -155,7 +155,7 @@ func TestFlags(t *testing.T) {
 			"actual:", printUint64Bits(flags))
 	}
 
-	expected = Ldatetime | Llongfile
+	expected = Ltimestamp | Llongfile
 	logger.SetFlags(expected)
 	flags = logger.Flags()
 	if flags&(expected) == 0 {

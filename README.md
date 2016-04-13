@@ -56,7 +56,7 @@ func main() {
     // set flags for the default logger
     // alternatively, you can create your own logger
     // and supply flags at creation time
-    mlog.SetFlags(mlog.Ldatetime | mlog.Ldebug)
+    mlog.SetFlags(mlog.Ltimestamp | mlog.Ldebug)
 
     mlog.Debugm("now this will print!")
 

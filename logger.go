@@ -15,13 +15,13 @@ import (
 )
 
 const (
-	Ldatetime  uint64 = 1 << iota // log the date+time
+	Ltimestamp uint64 = 1 << iota // log the date+time
 	Llevel                        // print log level
 	Llongfile                     // file path and line number: /a/b/c/d.go:23
 	Lshortfile                    // file name and line number: d.go:23. overrides Llongfile
 	Lsort                         // sort Map key value pairs in output
 	Ldebug                        // enable debug level log
-	Lstd       = Ldatetime | Llevel
+	Lstd       = Ltimestamp | Llevel | Lsort
 )
 
 var (
@@ -51,7 +51,7 @@ func (l *Logger) Output(depth int, level string, message string, data ...Map) {
 	defer bufPool.Put(buf)
 
 	flags := atomic.LoadUint64(&l.flags)
-	if flags&Ldatetime != 0 {
+	if flags&Ltimestamp != 0 {
 		buf.WriteString(`time="`)
 		buf.WriteString(now)
 		buf.Write(i_QUOTE_SPACE)
