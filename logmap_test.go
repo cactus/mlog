@@ -11,7 +11,7 @@ import (
 func BenchmarkLogMapWriteTo(b *testing.B) {
 	m := Map{}
 	for i := 1; i <= 100; i++ {
-		m[randString(6)] = randString(10)
+		m[randString(10, false)] = randString(25, true)
 	}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {

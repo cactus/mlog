@@ -12,21 +12,26 @@ import (
 )
 
 const (
-	letterBytes   = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ\""
-	letterIdxBits = 6                    // 6 bits to represent a letter index
-	letterIdxMask = 1<<letterIdxBits - 1 // All 1-bits, as many as letterIdxBits
-	letterIdxMax  = 63 / letterIdxBits   // # of letter indices fitting in 63 bits
+	letterBytes    = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+	letterBytesAlt = letterBytes + "\"\t\r\n"
+	letterIdxBits  = 6                    // 6 bits to represent a letter index
+	letterIdxMask  = 1<<letterIdxBits - 1 // All 1-bits, as many as letterIdxBits
+	letterIdxMax   = 63 / letterIdxBits   // # of letter indices fitting in 63 bits
 )
 
 // uses unseeded rand (seed(1))...only use for testing!
-func randString(n int) string {
+func randString(n int, altchars bool) string {
+	lb := letterBytes
+	if altchars {
+		lb = letterBytesAlt
+	}
 	b := make([]byte, n)
 	for i, cache, remain := n-1, rand.Int63(), letterIdxMax; i >= 0; {
 		if remain == 0 {
 			cache, remain = rand.Int63(), letterIdxMax
 		}
-		if idx := int(cache & letterIdxMask); idx < len(letterBytes) {
-			b[i] = letterBytes[idx]
+		if idx := int(cache & letterIdxMask); idx < len(lb) {
+			b[i] = lb[idx]
 			i--
 		}
 		cache >>= letterIdxBits
@@ -58,7 +63,7 @@ func BenchmarkSLoggingBaseHugeMapUnsortedKeys(b *testing.B) {
 	logger := New(ioutil.Discard, 0)
 	m := Map{}
 	for i := 1; i <= 100; i++ {
-		m[randString(6)] = randString(10)
+		m[randString(6, false)] = randString(10, false)
 	}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
@@ -70,7 +75,7 @@ func BenchmarkSLoggingBaseHugeMapSortedKeys(b *testing.B) {
 	logger := New(ioutil.Discard, Lstd|Lsort)
 	m := Map{}
 	for i := 1; i <= 100; i++ {
-		m[randString(6)] = randString(10)
+		m[randString(6, false)] = randString(10, false)
 	}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
