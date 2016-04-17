@@ -14,16 +14,6 @@ import (
 	"sync/atomic"
 )
 
-const (
-	Ltimestamp uint64 = 1 << iota // log the date+time
-	Llevel                        // print log level
-	Llongfile                     // file path and line number: /a/b/c/d.go:23
-	Lshortfile                    // file name and line number: d.go:23. overrides Llongfile
-	Lsort                         // sort Map key value pairs in output
-	Ldebug                        // enable debug level log
-	Lstd       = Ltimestamp | Llevel | Lsort
-)
-
 var (
 	bufPool       = newBufferPool()
 	i_NEWLINE     = []byte("\n")
@@ -50,7 +40,7 @@ func (l *Logger) Output(depth int, level string, message string, data ...Map) {
 	buf := bufPool.Get()
 	defer bufPool.Put(buf)
 
-	flags := atomic.LoadUint64(&l.flags)
+	flags := FlagSet(atomic.LoadUint64(&l.flags))
 	if flags&Ltimestamp != 0 {
 		buf.WriteString(`time="`)
 		buf.WriteString(now)
@@ -122,18 +112,18 @@ func (l *Logger) Output(depth int, level string, message string, data ...Map) {
 	buf.WriteTo(l.out)
 }
 
-func (l *Logger) Flags() uint64 {
-	return atomic.LoadUint64(&l.flags)
+func (l *Logger) Flags() FlagSet {
+	return FlagSet(atomic.LoadUint64(&l.flags))
 }
 
-func (l *Logger) SetFlags(flags uint64) {
+func (l *Logger) SetFlags(flags FlagSet) {
 	l.mu.Lock()
 	defer l.mu.Unlock()
-	atomic.StoreUint64(&l.flags, flags)
+	atomic.StoreUint64(&l.flags, uint64(flags))
 }
 
 func (l *Logger) HasDebug() bool {
-	flags := atomic.LoadUint64(&l.flags)
+	flags := FlagSet(atomic.LoadUint64(&l.flags))
 	return flags&Ldebug != 0
 }
 
@@ -214,9 +204,9 @@ func (l *Logger) Fatal(v ...interface{}) {
 
 // New creates a new Logger.
 // The debug argument specifies whether debug should be set or not.
-func New(out io.Writer, flags uint64) *Logger {
+func New(out io.Writer, flags FlagSet) *Logger {
 	return &Logger{
 		out:   out,
-		flags: flags,
+		flags: uint64(flags),
 	}
 }

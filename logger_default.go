@@ -8,11 +8,11 @@ import (
 // the default package level Logger
 var DefaultLogger = New(os.Stderr, Lstd)
 
-func Flags() uint64 {
+func Flags() FlagSet {
 	return DefaultLogger.Flags()
 }
 
-func SetFlags(flags uint64) {
+func SetFlags(flags FlagSet) {
 	DefaultLogger.SetFlags(flags)
 }
 
