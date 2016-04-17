@@ -16,10 +16,11 @@ mlog only has 3 logging levels: Debug, Info, and Fatal.
 
 ### How does it work?
 
-*   `Debugm` and `Debugf` only emit when the debug flag is set.
-*   `Fatalm` and `Fatalf` call `os.Exit(1)` after emitting the associated
-    message data.
-*   `Infom` and `Infof` just emit the associated message data.
+*   `Debugm`, `Debugf`, and `Debug` only emit when the debug flag is set.
+*   `Fatalm`, `Fatalf`, and `Fatal` call `os.Exit(1)` after emitting the
+    associated message data.
+*   `Infom`, `Infof`, and `Info` just emit the associated message data.
+*   `Printm`, `Printf`, and `Print` are aliases of the Info methods above.
 
 That's it!
 
