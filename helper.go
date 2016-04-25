@@ -23,7 +23,10 @@ func intpow10(e int) int {
 
 func itoaw(b *bytes.Buffer, i int, wid int) {
 	if i <= 0 {
-		b.WriteString("0000")
+		for wid > 0 {
+			b.WriteByte('0')
+			wid--
+		}
 		return
 	}
 
@@ -44,22 +47,30 @@ func writeTime(buf *bytes.Buffer, t *time.Time, flags FlagSet) {
 	buf.WriteByte('-')
 	itoaw(buf, day, 2)
 	buf.WriteByte('T')
+
 	hour, min, sec := t.Clock()
 	itoaw(buf, hour, 2)
 	buf.WriteByte(':')
 	itoaw(buf, min, 2)
 	buf.WriteByte(':')
 	itoaw(buf, sec, 2)
-	_, offset := t.Zone()
-	if flags&Lmicroseconds != 0 {
+
+	switch {
+	case flags&Lmicroseconds != 0:
 		buf.WriteByte('.')
 		itoaw(buf, t.Nanosecond()/1e3, 6)
+	case flags&Lnanoseconds != 0:
+		buf.WriteByte('.')
+		itoaw(buf, t.Nanosecond(), 9)
 	}
+
+	_, offset := t.Zone()
 	if offset == 0 {
 		buf.WriteByte('Z')
 	} else {
 		if offset < 0 {
 			buf.WriteByte('-')
+			offset = -offset
 		} else {
 			buf.WriteByte('+')
 		}

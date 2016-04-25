@@ -12,6 +12,7 @@ import (
 const (
 	Ltimestamp    FlagSet = 1 << iota // log the date+time stamp
 	Lmicroseconds                     // use microsecond timestamp granularity
+	Lnanoseconds                      // use nanosecond timestamp granularity
 	Llevel                            // print log level
 	Llongfile                         // file path and line number: /a/b/c/d.go:23
 	Lshortfile                        // file name and line number: d.go:23. overrides Llongfile
