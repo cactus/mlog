@@ -129,7 +129,7 @@ func BenchmarkSLoggingDebugWithDisabled(b *testing.B) {
 }
 
 func BenchmarkSLoggingLikeStdlib(b *testing.B) {
-	logger := New(ioutil.Discard, Lstd)
+	logger := New(ioutil.Discard, Ltimestamp|Llevel)
 	m := Map{"x": 42}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {

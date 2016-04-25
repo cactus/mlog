@@ -10,13 +10,14 @@ import (
 )
 
 const (
-	Ltimestamp FlagSet = 1 << iota // log the date+time
-	Llevel                         // print log level
-	Llongfile                      // file path and line number: /a/b/c/d.go:23
-	Lshortfile                     // file name and line number: d.go:23. overrides Llongfile
-	Lsort                          // sort Map key value pairs in output
-	Ldebug                         // enable debug level log
-	Lstd       = Ltimestamp | Llevel | Lsort
+	Ltimestamp    FlagSet = 1 << iota // log the date+time stamp
+	Lmicroseconds                     // use microsecond timestamp granularity
+	Llevel                            // print log level
+	Llongfile                         // file path and line number: /a/b/c/d.go:23
+	Lshortfile                        // file name and line number: d.go:23. overrides Llongfile
+	Lsort                             // sort Map key value pairs in output
+	Ldebug                            // enable debug level log
+	Lstd          = Ltimestamp | Llevel | Lsort
 )
 
 var flagNames = map[FlagSet]string{

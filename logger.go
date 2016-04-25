@@ -12,6 +12,7 @@ import (
 	"strconv"
 	"sync"
 	"sync/atomic"
+	"time"
 )
 
 var (
@@ -41,9 +42,9 @@ func (l *Logger) Output(depth int, level string, message string, data ...Map) {
 
 	// if time is being logged, handle time as soon as possible
 	if flags&Ltimestamp != 0 {
-		now := formattedDate.String()
+		t := time.Now()
 		buf.WriteString(`time="`)
-		buf.WriteString(now)
+		writeTime(buf, &t, flags)
 		buf.Write(i_QUOTE_SPACE)
 	}
 
