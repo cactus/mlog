@@ -22,12 +22,14 @@ const (
 )
 
 var flagNames = map[FlagSet]string{
-	Ltimestamp: "Ltimestamp",
-	Llevel:     "Llevel",
-	Llongfile:  "Llongfile",
-	Lshortfile: "Lshortfile",
-	Lsort:      "Lsort",
-	Ldebug:     "Ldebug",
+	Ltimestamp:    "Ltimestamp",
+	Lmicroseconds: "Lmicroseconds",
+	Lnanoseconds:  "Lnanoseconds",
+	Llevel:        "Llevel",
+	Llongfile:     "Llongfile",
+	Lshortfile:    "Lshortfile",
+	Lsort:         "Lsort",
+	Ldebug:        "Ldebug",
 }
 
 type FlagSet uint64
