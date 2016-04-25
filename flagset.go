@@ -11,11 +11,11 @@ import (
 
 const (
 	Ltimestamp    FlagSet = 1 << iota // log the date+time stamp
-	Lmicroseconds                     // use microsecond timestamp granularity
-	Lnanoseconds                      // use nanosecond timestamp granularity
-	Llevel                            // print log level
-	Llongfile                         // file path and line number: /a/b/c/d.go:23
-	Lshortfile                        // file name and line number: d.go:23. overrides Llongfile
+	Lmicroseconds                     // use microsecond timestamp granularity in Ltimestamp
+	Lnanoseconds                      // use nanosecond timestamp granularity in Ltimestamp. overrides Lmicroseconds
+	Llevel                            // log message level
+	Llongfile                         // log file path and line number: /a/b/c/d.go:23
+	Lshortfile                        // log file name and line number: d.go:23. overrides Llongfile
 	Lsort                             // sort Map key value pairs in output
 	Ldebug                            // enable debug level log
 	Lstd          = Ltimestamp | Llevel | Lsort

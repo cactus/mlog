@@ -56,12 +56,12 @@ func writeTime(buf *bytes.Buffer, t *time.Time, flags FlagSet) {
 	itoaw(buf, sec, 2)
 
 	switch {
-	case flags&Lmicroseconds != 0:
-		buf.WriteByte('.')
-		itoaw(buf, t.Nanosecond()/1e3, 6)
 	case flags&Lnanoseconds != 0:
 		buf.WriteByte('.')
 		itoaw(buf, t.Nanosecond(), 9)
+	case flags&Lmicroseconds != 0:
+		buf.WriteByte('.')
+		itoaw(buf, t.Nanosecond()/1e3, 6)
 	}
 
 	_, offset := t.Zone()
