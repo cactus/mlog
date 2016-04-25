@@ -34,14 +34,14 @@ type Logger struct {
 }
 
 func (l *Logger) Output(depth int, level string, message string, data ...Map) {
-	// get this as soon as possible
-	now := formattedDate.String()
-
 	buf := bufPool.Get()
 	defer bufPool.Put(buf)
 
 	flags := FlagSet(atomic.LoadUint64(&l.flags))
+
+	// if time is being logged, handle time as soon as possible
 	if flags&Ltimestamp != 0 {
+		now := formattedDate.String()
 		buf.WriteString(`time="`)
 		buf.WriteString(now)
 		buf.Write(i_QUOTE_SPACE)
