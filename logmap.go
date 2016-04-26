@@ -11,10 +11,17 @@ import (
 )
 
 var (
+	// precomputed byte slices, to avoid calling io.WriteString
+	// when possible (io.WriteString has an assertion, so just
+	// use Write (io.Writer interface) when it makes sense.
 	c_Q = []byte{'\\', '"'}
 	c_T = []byte{'\\', 't'}
 	c_R = []byte{'\\', 'r'}
 	c_N = []byte{'\\', 'n'}
+
+	i_SPACE       = []byte{' '}
+	i_QUOTE       = []byte{'"'}
+	i_EQUAL_QUOTE = []byte{'=', '"'}
 )
 
 // Map is a key value element used to pass
@@ -29,29 +36,6 @@ func (m Map) Keys() []string {
 	}
 	return keys
 }
-
-/*
-// WriteTo writes an unsorted string representation of
-// the Map's key value pairs to w.
-func (m Map) WriteTo(w io.Writer) (int64, error) {
-	first := true
-	for k, v := range m {
-		if first {
-			first = false
-		} else {
-			w.Write(i_SPACE)
-		}
-
-		io.WriteString(w, k)
-		w.Write(i_EQUAL_QUOTE)
-		fmt.Fprint(w, v)
-        // io.WriteString(w, strconv.Quote(fmt.Sprint(v)))
-		w.Write(i_QUOTE)
-	}
-	// int64 to be compat with io.WriterTo
-	return int64(len(m)), nil
-}
-*/
 
 // WriteTo writes an unsorted string representation of
 // the Map's key value pairs to w.
@@ -72,6 +56,7 @@ func (m Map) WriteTo(w io.Writer) (int64, error) {
 		w.Write(i_EQUAL_QUOTE)
 
 		fmt.Fprint(buf, v)
+		// pull out byte slice from buff
 		b := buf.Bytes()
 		blen := buf.Len()
 		p := 0
@@ -106,31 +91,6 @@ func (m Map) WriteTo(w io.Writer) (int64, error) {
 	// int64 to be compat with io.WriterTo
 	return int64(len(m)), nil
 }
-
-/*
-// SortedWriteTo writes a sorted string representation of
-// the Map's key value pairs to w.
-func (m Map) SortedWriteTo(w io.Writer) (int64, error) {
-	keys := m.Keys()
-	sort.Strings(keys)
-
-	first := true
-	for _, k := range keys {
-		if first {
-			first = false
-		} else {
-			w.Write(i_SPACE)
-		}
-
-		io.WriteString(w, k)
-		w.Write(i_EQUAL_QUOTE)
-		fmt.Fprint(w, m[k])
-		w.Write(i_QUOTE)
-	}
-	// int64 to be compat with WriterTo above
-	return int64(len(m)), nil
-}
-*/
 
 // SortedWriteTo writes a sorted string representation of
 // the Map's key value pairs to w.

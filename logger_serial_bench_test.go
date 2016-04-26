@@ -160,3 +160,19 @@ func BenchmarkSStdlibLogLongfile(b *testing.B) {
 		logger.Print(`msg="%s" %s="%d"`, "this is a test: %s", "x", 42)
 	}
 }
+
+func BenchmarkSPrintLoggingLikeStdlib(b *testing.B) {
+	logger := New(ioutil.Discard, Ltimestamp|Llevel)
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		logger.Info("this is a test")
+	}
+}
+
+func BenchmarkSPrintStdlibLog(b *testing.B) {
+	logger := log.New(ioutil.Discard, "info: ", log.LstdFlags)
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		logger.Print("this is a test")
+	}
+}

@@ -9,21 +9,13 @@ import (
 	"io"
 	"os"
 	"runtime"
-	"strconv"
 	"sync"
 	"sync/atomic"
 	"time"
 )
 
 var (
-	bufPool       = newBufferPool()
-	i_NEWLINE     = []byte("\n")
-	i_SPACE       = []byte{' '}
-	i_COLON       = []byte{':'}
-	i_QUOTE       = []byte{'"'}
-	i_EQUAL       = []byte{'='}
-	i_EQUAL_QUOTE = []byte{'=', '"'}
-	i_QUOTE_SPACE = []byte{'"', ' '}
+	bufPool = newSliceBufferPool()
 )
 
 // A Logger represents a logging object, that embeds log.Logger, and
@@ -35,23 +27,23 @@ type Logger struct {
 }
 
 func (l *Logger) Output(depth int, level string, message string, data ...Map) {
-	buf := bufPool.Get()
-	defer bufPool.Put(buf)
+	sb := bufPool.Get()
+	defer bufPool.Put(sb)
 
 	flags := FlagSet(atomic.LoadUint64(&l.flags))
 
 	// if time is being logged, handle time as soon as possible
 	if flags&Ltimestamp != 0 {
 		t := time.Now()
-		buf.WriteString(`time="`)
-		writeTime(buf, &t, flags)
-		buf.Write(i_QUOTE_SPACE)
+		sb.WriteString(`time="`)
+		writeTime(sb, &t, flags)
+		sb.WriteString(`" `)
 	}
 
 	if flags&Llevel != 0 {
-		buf.WriteString(`level="`)
-		buf.WriteString(level)
-		buf.Write(i_QUOTE_SPACE)
+		sb.WriteString(`level="`)
+		sb.WriteString(level)
+		sb.WriteString(`" `)
 	}
 
 	if flags&(Lshortfile|Llongfile) != 0 {
@@ -72,15 +64,15 @@ func (l *Logger) Output(depth int, level string, message string, data ...Map) {
 			file = short
 		}
 
-		buf.WriteString(`caller="`)
-		buf.WriteString(file)
-		buf.Write(i_COLON)
-		buf.WriteString(strconv.Itoa(line))
-		buf.Write(i_QUOTE_SPACE)
+		sb.WriteString(`caller="`)
+		sb.WriteString(file)
+		sb.WriteByte(':')
+		sb.AppendIntWidth(line, 0)
+		sb.WriteString(`" `)
 	}
 
 	if flags != 0 {
-		buf.WriteString(`msg="`)
+		sb.WriteString(`msg="`)
 	}
 	// as a kindness, strip any newlines off the end of the string
 	for i := len(message) - 1; i > 0; i-- {
@@ -90,27 +82,28 @@ func (l *Logger) Output(depth int, level string, message string, data ...Map) {
 			break
 		}
 	}
-	buf.WriteString(message)
+	sb.WriteString(message)
 	if flags != 0 {
-		buf.Write(i_QUOTE)
+		sb.WriteByte('"')
 	}
 
 	if len(data) > 0 {
 		for _, e := range data {
-			buf.Write(i_SPACE)
+			sb.WriteByte(' ')
 			if flags&Lsort != 0 {
-				e.SortedWriteTo(buf)
+				e.SortedWriteTo(sb)
 			} else {
-				e.WriteTo(buf)
+				e.WriteTo(sb)
 			}
 		}
 	}
 
-	buf.Write(i_NEWLINE)
+	sb.WriteByte('\n')
 
+	// lock writing to serialize log output (no scrambled log lines)
 	l.mu.Lock()
 	defer l.mu.Unlock()
-	buf.WriteTo(l.out)
+	sb.WriteTo(l.out)
 }
 
 func (l *Logger) Flags() FlagSet {

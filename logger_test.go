@@ -9,6 +9,9 @@ import (
 	"io/ioutil"
 	"regexp"
 	"testing"
+	"time"
+
+	"github.com/stretchr/testify/assert"
 )
 
 type tester struct {
@@ -128,4 +131,39 @@ func TestAllDebug(t *testing.T) {
 func TestOnce(t *testing.T) {
 	logger := New(ioutil.Discard, Lstd)
 	logger.Infom("test this", Map{"test": 1})
+}
+
+func TestTimestampLog(t *testing.T) {
+	buf := &bytes.Buffer{}
+
+	// test nanoseconds
+	logger := New(buf, Lstd|Lnanoseconds)
+	tnow := time.Now()
+	logger.Info("test this")
+	ts := bytes.Split(buf.Bytes()[6:], []byte{'"'})[0]
+	tlog, err := time.Parse(time.RFC3339Nano, string(ts))
+	assert.Nil(t, err, "Failed to parse time from log")
+	assert.WithinDuration(t, tnow, tlog, 2*time.Second, "Time not even close")
+
+	buf.Truncate(0)
+
+	// test microeconds
+	logger.SetFlags(Lstd | Lmicroseconds)
+	tnow = time.Now()
+	logger.Info("test this")
+	ts = bytes.Split(buf.Bytes()[6:], []byte{'"'})[0]
+	tlog, err = time.Parse(time.RFC3339Nano, string(ts))
+	assert.Nil(t, err, "Failed to parse time from log")
+	assert.WithinDuration(t, tnow, tlog, 2*time.Second, "Time not even close")
+
+	buf.Truncate(0)
+
+	// test standard (seconds)
+	logger.SetFlags(Lstd)
+	tnow = time.Now()
+	logger.Info("test this")
+	ts = bytes.Split(buf.Bytes()[6:], []byte{'"'})[0]
+	tlog, err = time.Parse(time.RFC3339Nano, string(ts))
+	assert.Nil(t, err, "Failed to parse time from log")
+	assert.WithinDuration(t, tnow, tlog, 2*time.Second, "Time not even close")
 }
