@@ -10,25 +10,25 @@ type sliceBuffer struct {
 }
 
 func (sb *sliceBuffer) AppendIntWidth(i int, wid int) {
-	x := 0
+	digits := 0
+	// write digits backwards (easier/faster)
 	for i >= 10 {
 		q := i / 10
 		sb.data = append(sb.data, byte('0'+i-q*10))
 		i = q
-		x++
+		digits++
 	}
 	sb.data = append(sb.data, byte('0'+i))
-	x++
+	digits++
 
-	y := x
-	for wid > x {
+	for j := wid - digits; j > 0; j-- {
 		sb.data = append(sb.data, '0')
-		wid--
-		y++
+		digits++
 	}
 
-	// twizzle
-	for i, j := len(sb.data)-y, len(sb.data)-1; i < j; i, j = i+1, j-1 {
+	// reverse to proper order
+	sblen := len(sb.data)
+	for i, j := sblen-digits, sblen-1; i < j; i, j = i+1, j-1 {
 		sb.data[i], sb.data[j] = sb.data[j], sb.data[i]
 	}
 }
