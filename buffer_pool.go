@@ -89,6 +89,6 @@ func (sp *sliceBufferPool) Get() *sliceBuffer {
 }
 
 func (sp *sliceBufferPool) Put(c *sliceBuffer) {
-	c.Reset()
+	c.Truncate(0)
 	sp.Pool.Put(c)
 }
