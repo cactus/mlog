@@ -9,6 +9,7 @@ func writeTime(sb *sliceBuffer, t *time.Time, flags FlagSet) {
 	sb.AppendIntWidth(int(month), 2)
 	sb.WriteByte('-')
 	sb.AppendIntWidth(day, 2)
+
 	sb.WriteByte('T')
 
 	hour, min, sec := t.Clock()
