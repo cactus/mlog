@@ -2,7 +2,7 @@ package mlog
 
 import "time"
 
-func writeTime(sb *sliceBuffer, t *time.Time, flags FlagSet) {
+func writeTime(sb sliceWriter, t *time.Time, flags FlagSet) {
 	year, month, day := t.Date()
 	sb.AppendIntWidth(year, 4)
 	sb.WriteByte('-')

@@ -5,6 +5,14 @@ import (
 	"sync"
 )
 
+type sliceWriter interface {
+	Write([]byte) (int, error)
+	WriteByte(byte) error
+	WriteString(string) (int, error)
+	AppendIntWidth(int, int)
+	Truncate(int)
+}
+
 type sliceBuffer struct {
 	data []byte
 }

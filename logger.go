@@ -91,9 +91,9 @@ func (l *Logger) Output(depth int, level string, message string, data ...Map) {
 		for _, e := range data {
 			sb.WriteByte(' ')
 			if flags&Lsort != 0 {
-				e.SortedWriteTo(sb)
+				e.sortedWriteBuf(sb)
 			} else {
-				e.WriteTo(sb)
+				e.unsortedWriteBuf(sb)
 			}
 		}
 	}
