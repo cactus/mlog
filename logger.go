@@ -8,102 +8,34 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"runtime"
 	"sync"
 	"sync/atomic"
-	"time"
-)
-
-var (
-	bufPool = newSliceBufferPool()
 )
 
 // A Logger represents a logging object, that embeds log.Logger, and
 // provides support for a toggle-able debug flag.
 type Logger struct {
-	mu    sync.Mutex // ensures atomic writes are synchronized
-	out   io.Writer
-	flags uint64
+	mu      sync.Mutex // ensures atomic writes are synchronized
+	out     io.Writer
+	flags   uint64
+	fwriter LogFormatWriter
 }
 
-func (l *Logger) Output(depth int, level string, message string, data ...Map) {
-	sb := bufPool.Get()
-	defer bufPool.Put(sb)
-
-	flags := FlagSet(atomic.LoadUint64(&l.flags))
-
-	// if time is being logged, handle time as soon as possible
-	if flags&Ltimestamp != 0 {
-		t := time.Now()
-		sb.WriteString(`time="`)
-		writeTime(sb, &t, flags)
-		sb.WriteString(`" `)
-	}
-
-	if flags&Llevel != 0 {
-		sb.WriteString(`level="`)
-		sb.WriteString(level)
-		sb.WriteString(`" `)
-	}
-
-	if flags&(Lshortfile|Llongfile) != 0 {
-		_, file, line, ok := runtime.Caller(depth)
-		if !ok {
-			file = "???"
-			line = 0
-		}
-
-		if flags&Lshortfile != 0 {
-			short := file
-			for i := len(file) - 1; i > 0; i-- {
-				if file[i] == '/' {
-					short = file[i+1:]
-					break
-				}
-			}
-			file = short
-		}
-
-		sb.WriteString(`caller="`)
-		sb.WriteString(file)
-		sb.WriteByte(':')
-		sb.AppendIntWidth(line, 0)
-		sb.WriteString(`" `)
-	}
-
-	if flags != 0 {
-		sb.WriteString(`msg="`)
-	}
-	// as a kindness, strip any newlines off the end of the string
-	for i := len(message) - 1; i > 0; i-- {
-		if message[i] == '\n' {
-			message = message[:i]
-		} else {
-			break
-		}
-	}
-	sb.WriteString(message)
-	if flags != 0 {
-		sb.WriteByte('"')
-	}
-
-	if len(data) > 0 {
-		for _, e := range data {
-			sb.WriteByte(' ')
-			if flags&Lsort != 0 {
-				e.sortedWriteBuf(sb)
-			} else {
-				e.unsortedWriteBuf(sb)
-			}
-		}
-	}
-
-	sb.WriteByte('\n')
-
+func (l *Logger) Write(b []byte) (int, error) {
 	// lock writing to serialize log output (no scrambled log lines)
 	l.mu.Lock()
 	defer l.mu.Unlock()
-	sb.WriteTo(l.out)
+	return l.out.Write(b)
+}
+
+func (l *Logger) Emit(level int, message string, extra Map) {
+	l.fwriter.Emit(l, level, message, extra)
+}
+
+func (l *Logger) SetFormatter(w LogFormatWriter) {
+	l.mu.Lock()
+	defer l.mu.Unlock()
+	l.fwriter = w
 }
 
 func (l *Logger) Flags() FlagSet {
@@ -111,8 +43,6 @@ func (l *Logger) Flags() FlagSet {
 }
 
 func (l *Logger) SetFlags(flags FlagSet) {
-	l.mu.Lock()
-	defer l.mu.Unlock()
 	atomic.StoreUint64(&l.flags, uint64(flags))
 }
 
@@ -123,26 +53,26 @@ func (l *Logger) HasDebug() bool {
 
 // Debugm conditionally logs message and any Map elements at level="debug".
 // If the Logger does not have the Ldebug flag, nothing is logged.
-func (l *Logger) Debugm(message string, v ...Map) {
+func (l *Logger) Debugm(message string, v Map) {
 	if l.HasDebug() {
-		l.Output(2, "D", message, v...)
+		l.Emit(-1, message, v)
 	}
 }
 
 // Infom logs message and any Map elements at level="info".
-func (l *Logger) Infom(message string, v ...Map) {
-	l.Output(2, "I", message, v...)
+func (l *Logger) Infom(message string, v Map) {
+	l.Emit(0, message, v)
 }
 
 // Printm logs message and any Map elements at level="info".
-func (l *Logger) Printm(message string, v ...Map) {
-	l.Output(2, "I", message, v...)
+func (l *Logger) Printm(message string, v Map) {
+	l.Emit(0, message, v)
 }
 
 // Fatalm logs message and any Map elements at level="fatal", then calls
 // os.Exit(1)
-func (l *Logger) Fatalm(message string, v ...Map) {
-	l.Output(2, "F", message, v...)
+func (l *Logger) Fatalm(message string, v Map) {
+	l.Emit(1, message, v)
 	os.Exit(1)
 }
 
@@ -150,24 +80,24 @@ func (l *Logger) Fatalm(message string, v ...Map) {
 // If the Logger does not have the Ldebug flag, nothing is logged.
 func (l *Logger) Debugf(format string, v ...interface{}) {
 	if l.HasDebug() {
-		l.Output(2, "D", fmt.Sprintf(format, v...))
+		l.Emit(-1, fmt.Sprintf(format, v...), nil)
 	}
 }
 
 // Infof formats and logs message at level="info".
 func (l *Logger) Infof(format string, v ...interface{}) {
-	l.Output(2, "I", fmt.Sprintf(format, v...))
+	l.Emit(0, fmt.Sprintf(format, v...), nil)
 }
 
 // Printf formats and logs message at level="info".
 func (l *Logger) Printf(format string, v ...interface{}) {
-	l.Output(2, "I", fmt.Sprintf(format, v...))
+	l.Emit(0, fmt.Sprintf(format, v...), nil)
 }
 
 // Fatalf formats and logs message at level="fatal", then calls
 // os.Exit(1)
 func (l *Logger) Fatalf(format string, v ...interface{}) {
-	l.Output(2, "F", fmt.Sprintf(format, v...))
+	l.Emit(1, fmt.Sprintf(format, v...), nil)
 	os.Exit(1)
 }
 
@@ -175,24 +105,24 @@ func (l *Logger) Fatalf(format string, v ...interface{}) {
 // If the Logger does not have the Ldebug flag, nothing is logged.
 func (l *Logger) Debug(v ...interface{}) {
 	if l.HasDebug() {
-		l.Output(2, "D", fmt.Sprint(v...))
+		l.Emit(-1, fmt.Sprint(v...), nil)
 	}
 }
 
 // Info logs message at level="info".
 func (l *Logger) Info(v ...interface{}) {
-	l.Output(2, "I", fmt.Sprint(v...))
+	l.Emit(0, fmt.Sprint(v...), nil)
 }
 
 // Print logs message at level="info".
 func (l *Logger) Print(v ...interface{}) {
-	l.Output(2, "I", fmt.Sprint(v...))
+	l.Emit(0, fmt.Sprint(v...), nil)
 }
 
 // Fatal logs message at level="fatal", then calls
 // os.Exit(1)
 func (l *Logger) Fatal(v ...interface{}) {
-	l.Output(2, "F", fmt.Sprint(v...))
+	l.Emit(1, fmt.Sprint(v...), nil)
 	os.Exit(1)
 }
 
@@ -200,7 +130,8 @@ func (l *Logger) Fatal(v ...interface{}) {
 // The debug argument specifies whether debug should be set or not.
 func New(out io.Writer, flags FlagSet) *Logger {
 	return &Logger{
-		out:   out,
-		flags: uint64(flags),
+		out:     out,
+		flags:   uint64(flags),
+		fwriter: &PlainLogWriter{},
 	}
 }

@@ -5,6 +5,29 @@ import (
 	"sync"
 )
 
+var bufPool = newSliceBufferPool()
+
+type sliceBufferPool struct {
+	*sync.Pool
+}
+
+func newSliceBufferPool() *sliceBufferPool {
+	return &sliceBufferPool{
+		&sync.Pool{New: func() interface{} {
+			return &sliceBuffer{make([]byte, 0, 1024)}
+		}},
+	}
+}
+
+func (sp *sliceBufferPool) Get() *sliceBuffer {
+	return (sp.Pool.Get()).(*sliceBuffer)
+}
+
+func (sp *sliceBufferPool) Put(c *sliceBuffer) {
+	c.Truncate(0)
+	sp.Pool.Put(c)
+}
+
 type sliceWriter interface {
 	Write([]byte) (int, error)
 	WriteByte(byte) error
@@ -78,25 +101,4 @@ func (sb *sliceBuffer) Reset() {
 
 func (sb *sliceBuffer) Truncate(i int) {
 	sb.data = sb.data[:i]
-}
-
-type sliceBufferPool struct {
-	*sync.Pool
-}
-
-func newSliceBufferPool() *sliceBufferPool {
-	return &sliceBufferPool{
-		&sync.Pool{New: func() interface{} {
-			return &sliceBuffer{make([]byte, 0, 1024)}
-		}},
-	}
-}
-
-func (sp *sliceBufferPool) Get() *sliceBuffer {
-	return (sp.Pool.Get()).(*sliceBuffer)
-}
-
-func (sp *sliceBufferPool) Put(c *sliceBuffer) {
-	c.Truncate(0)
-	sp.Pool.Put(c)
 }

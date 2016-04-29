@@ -15,10 +15,10 @@ import (
 )
 
 type tester struct {
-	level     string
-	pattern   string
-	message   string
-	arguments []Map
+	level   string
+	pattern string
+	message string
+	extra   Map
 }
 
 var infoTests = []tester{
@@ -26,47 +26,35 @@ var infoTests = []tester{
 		"info",
 		`level="I" msg="test one %d" x="y"`,
 		"test one %d",
-		[]Map{
-			Map{"x": "y"},
-		},
+		Map{"x": "y"},
 	},
 	{
 		"info",
 		`level="I" msg="test one %d" x="y"`,
 		"test one %d",
-		[]Map{
-			Map{"x": "y"},
-		},
+		Map{"x": "y"},
 	},
 	{
 		"info",
-		`level="I" msg="test one" x="y" y="z" t="u" u="v"`,
+		`level="I" msg="test one" t="u" u="v" x="y" y="z"`,
 		"test one",
-		[]Map{
-			Map{"x": "y", "y": "z"},
-			Map{"t": "u", "u": "v"},
-		},
+		Map{"x": "y", "y": "z", "t": "u", "u": "v"},
 	},
 	{
 		"info",
-		`level="I" msg="test one" x="y" y="z" t="u" u="v"`,
+		`level="I" msg="test one" t="u" u="v" x="y" y="z"`,
 		"test one",
-		[]Map{
-			Map{"y": "z", "x": "y"},
-			Map{"u": "v", "t": "u"},
-		},
+		Map{"y": "z", "x": "y", "u": "v", "t": "u"},
 	},
 	{
 		"info",
 		`level="I" msg="test one" haz_string="such tests" x="1" y="2" z="3"`,
 		"test one",
-		[]Map{
-			Map{
-				"x":          1,
-				"y":          2,
-				"z":          3,
-				"haz_string": "such tests",
-			},
+		Map{
+			"x":          1,
+			"y":          2,
+			"z":          3,
+			"haz_string": "such tests",
 		},
 	},
 }
@@ -76,19 +64,19 @@ var debugTests = []tester{
 		"debug",
 		`level="D" msg="test: %s %d"`,
 		"test: %s %d",
-		[]Map{},
+		Map{},
 	},
 }
 
-func testInfom(t *testing.T, logger *Logger, level, message, pattern string, arguments []Map) {
+func testInfom(t *testing.T, logger *Logger, level, message, pattern string, extra Map) {
 	buf := &bytes.Buffer{}
 	logger.out = buf
 
 	switch level {
 	case "debug":
-		logger.Debugm(message, arguments...)
+		logger.Debugm(message, extra)
 	default:
-		logger.Infom(message, arguments...)
+		logger.Infom(message, extra)
 	}
 	line := buf.String()
 
@@ -115,16 +103,16 @@ func testInfom(t *testing.T, logger *Logger, level, message, pattern string, arg
 func TestAllInfom(t *testing.T) {
 	logger := New(ioutil.Discard, Llevel|Lsort)
 	for _, tt := range infoTests {
-		testInfom(t, logger, tt.level, tt.message, tt.pattern, tt.arguments)
-		testInfom(t, logger, tt.level, tt.message, tt.pattern, tt.arguments)
+		testInfom(t, logger, tt.level, tt.message, tt.pattern, tt.extra)
+		testInfom(t, logger, tt.level, tt.message, tt.pattern, tt.extra)
 	}
 }
 
 func TestAllDebug(t *testing.T) {
 	logger := New(ioutil.Discard, Llevel|Lsort|Ldebug)
 	for _, tt := range debugTests {
-		testInfom(t, logger, tt.level, tt.message, tt.pattern, tt.arguments)
-		testInfom(t, logger, tt.level, tt.message, tt.pattern, tt.arguments)
+		testInfom(t, logger, tt.level, tt.message, tt.pattern, tt.extra)
+		testInfom(t, logger, tt.level, tt.message, tt.pattern, tt.extra)
 	}
 }
 
