@@ -17,8 +17,8 @@ mlog only has 3 logging levels: Debug, Info, and Fatal.
 ### How does it work?
 
 Logging methods are:
-*   `Debug` - conditionally logs message at level "debug". If the Logger does
-    not have the Ldebug flag set (eg. "debug" enabled), then nothing is logged.
+*   `Debug` - conditionally (if debug is enabled) logs message at level
+    "debug".
 *   `Debugf` - similar to `Debug`, but supports printf formatting.
 *   `Debugm` - similar to `Debug`, but logs an mlog.Map as extra data.
 *   `Info` - logs message at level "info". `Print` is an alias for `Info`.
