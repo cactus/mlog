@@ -16,11 +16,21 @@ mlog only has 3 logging levels: Debug, Info, and Fatal.
 
 ### How does it work?
 
-*   `Debugm`, `Debugf`, and `Debug` only emit when the debug flag is set.
-*   `Fatalm`, `Fatalf`, and `Fatal` call `os.Exit(1)` after emitting the
-    associated message data.
-*   `Infom`, `Infof`, and `Info` just emit the associated message data.
-*   `Printm`, `Printf`, and `Print` are aliases of the Info methods above.
+Logging methods are:
+*   `Debug` - conditionally logs message at level "debug". If the Logger does
+    not have the Ldebug flag set (eg. "debug" enabled), then nothing is logged.
+*   `Debugf` - similar to `Debug`, but supports printf formatting.
+*   `Debugm` - similar to `Debug`, but logs an mlog.Map as extra data.
+
+*   `Info` - logs message at level "info". `Print` is an alias for `Info`.
+*   `Infof` - similar to `Info`, but supports printf formatting. `Printf` is an
+    alias for `Infof`.
+*   `Infom` - similar to `Info`, but logs an mlog.Map as extra data. `Printm`
+    is an alias for `Infom`.
+
+*   `Fatal` - logs message at level "fata", then calls `os.Exit(1)`.
+*   `Fatalf` - similar to `Fatal`, but supports printf formatting.
+*   `Fatalm` - similar to `Fatal`, but logs an mlog.Map as extra data.
 
 That's it!
 
@@ -36,7 +46,7 @@ import (
 )
 
 func main() {
-    mlog.Infom("this is a log")
+    mlog.Info("this is a log")
 
     mlog.Infom("this is a log with more data", mlog.Map{
         "interesting": "data",
@@ -50,16 +60,16 @@ func main() {
         },
     )
 
-    mlog.Infom("this is a log with more data", thing)
+    mlog.Info("this is a log with more data", thing)
 
-    mlog.Debugm("this won't print")
+    mlog.Debug("this won't print")
 
     // set flags for the default logger
     // alternatively, you can create your own logger
     // and supply flags at creation time
     mlog.SetFlags(mlog.Ltimestamp | mlog.Ldebug)
 
-    mlog.Debugm("now this will print!")
+    mlog.Debug("now this will print!")
 
     mlog.Debugm("can it print?", mlog.Map{
         "how_fancy": []byte{'v', 'e', 'r', 'y', '!'},
@@ -77,14 +87,14 @@ func main() {
 Output:
 
 ```
-time="2016-04-11T00:31:30Z" level="I" msg="this is a log"
-time="2016-04-11T00:31:30Z" level="I" msg="this is a log with more data" interesting="data" something="42"
-time="2016-04-11T00:31:30Z" level="I" msg="this is a log with more data" this-works?="as long as it is a mlog.Map" what‽="yup"
-time="2016-04-11T00:31:30Z" level="D" msg="now this will print!"
-time="2016-04-11T00:31:30Z" level="D" msg="can it print?" how_fancy="[118 101 114 121 33]" this_too="if fmt.Print can print it!"
-time="2016-04-11T00:31:30Z" level="D" msg="a printf style debug log: here!"
-time="2016-04-11T00:31:30Z" level="I" msg="a printf style info log: here!"
-time="2016-04-11T00:31:30Z" level="F" msg="time for a nap" cleanup="false"
+time="2016-04-29T19:59:11-07:00" level="I" msg="this is a log"
+time="2016-04-29T19:59:11-07:00" level="I" msg="this is a log with more data" interesting="data" something="42"
+time="2016-04-29T19:59:11-07:00" level="I" msg="this is a log with more datawhat‽="yup" this-works?="as long as it is a mlog.Map""
+time="2016-04-29T19:59:11-07:00" msg="now this will print!"
+time="2016-04-29T19:59:11-07:00" msg="can it print?" this_too="if fmt.Print can print it!" how_fancy="[118 101 114 121 33]"
+time="2016-04-29T19:59:11-07:00" msg="a printf style debug log: here!"
+time="2016-04-29T19:59:11-07:00" msg="a printf style info log: here!"
+time="2016-04-29T19:59:11-07:00" msg="time for a nap" cleanup="false"
 exit status 1
 ```
 
