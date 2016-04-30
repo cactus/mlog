@@ -28,24 +28,30 @@ func (l *Logger) Write(b []byte) (int, error) {
 	return l.out.Write(b)
 }
 
+// Emit invokes the LogFormatWriter and logs the event.
 func (l *Logger) Emit(level int, message string, extra Map) {
 	l.fwriter.Emit(l, level, message, extra)
 }
 
+// SetFormatter sets the LogFormatWriter
 func (l *Logger) SetFormatter(w LogFormatWriter) {
 	l.mu.Lock()
 	defer l.mu.Unlock()
 	l.fwriter = w
 }
 
+// Flags retuns the current FlagSet
 func (l *Logger) Flags() FlagSet {
 	return FlagSet(atomic.LoadUint64(&l.flags))
 }
 
+// SetFlags sets the current FlagSet
 func (l *Logger) SetFlags(flags FlagSet) {
 	atomic.StoreUint64(&l.flags, uint64(flags))
 }
 
+// HasDebug returns true if the debug logging FlagSet is enabled, false
+// otherwise.
 func (l *Logger) HasDebug() bool {
 	flags := FlagSet(atomic.LoadUint64(&l.flags))
 	return flags&Ldebug != 0

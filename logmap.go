@@ -13,7 +13,7 @@ import (
 // data to the Logger functions.
 type Map map[string]interface{}
 
-// Return an unsorted list of keys in the Map as a []string.
+// Keys returns an unsorted list of keys in the Map as a []string.
 func (m Map) Keys() []string {
 	keys := make([]string, 0, len(m))
 	for k := range m {
@@ -22,7 +22,7 @@ func (m Map) Keys() []string {
 	return keys
 }
 
-// WriteTo writes an unsorted string representation of
+// unsortedWriteBuf writes an unsorted string representation of
 // the Map's key value pairs to w.
 func (m Map) unsortedWriteBuf(w sliceWriter) {
 	// scratch buffer for intermediate writes
@@ -75,7 +75,7 @@ func (m Map) unsortedWriteBuf(w sliceWriter) {
 	}
 }
 
-// SortedWriteTo writes a sorted string representation of
+// sortedWriteBuf writes a sorted string representation of
 // the Map's key value pairs to w.
 func (m Map) sortedWriteBuf(w sliceWriter) {
 	// scratch buffer for intermediate writes
@@ -139,7 +139,7 @@ func (m Map) String() string {
 	return buf.String()
 }
 
-// String returns a sorted string representation of
+// SortedString returns a sorted string representation of
 // the Map's key value pairs.
 func (m Map) SortedString() string {
 	buf := bufPool.Get()

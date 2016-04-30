@@ -5,13 +5,11 @@
 /*
 Package mlog provides a purposefully basic logging library for Go.
 
-mlog only has 3 logging levels: Debug, Info, and Fatal.
+mlog only has 3 logging levels: debug, info, and fatal.
 
-*   Debugm and Debugf only emit when the debug flag is set.
-
-*   Fatalm and Fatalf call os.Exit(1) after emitting the associated message data.
-
-*   Infom and Infof just emit the associated message data.
+Each logging level has 3 logging methods. As an example, the following methods
+log at the "info" level: Info, Infof, Infom. There are similar methods for
+the fatal and debug levels.
 
 Example usage:
 

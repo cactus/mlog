@@ -17,6 +17,7 @@ mlog only has 3 logging levels: Debug, Info, and Fatal.
 ### How does it work?
 
 Logging methods are:
+
 *   `Debug` - conditionally (if debug is enabled) logs message at level
     "debug".
 *   `Debugf` - similar to `Debug`, but supports printf formatting.

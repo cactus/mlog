@@ -5,17 +5,21 @@ import (
 	"os"
 )
 
-// the default package level Logger
+// DefaultLogger is the default package level Logger
 var DefaultLogger = New(os.Stderr, Lstd)
 
+// SetFormatter sets the LogFormatWriter for the degault logger. See
+// Logger.SetFormatter.
 func SetFormatter(w LogFormatWriter) {
 	DefaultLogger.SetFormatter(w)
 }
 
+// Flags returns the FlagSet of the default Logger. See Logger.Flags.
 func Flags() FlagSet {
 	return DefaultLogger.Flags()
 }
 
+// SetFlags sets the FlagSet on the default Logger. See Logger.SetFlags.
 func SetFlags(flags FlagSet) {
 	DefaultLogger.SetFlags(flags)
 }
