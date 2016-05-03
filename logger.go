@@ -15,10 +15,10 @@ import (
 // A Logger represents a logging object, that embeds log.Logger, and
 // provides support for a toggle-able debug flag.
 type Logger struct {
-	mu      sync.Mutex // ensures atomic writes are synchronized
 	out     io.Writer
-	flags   uint64
 	fwriter LogFormatWriter
+	mu      sync.Mutex // ensures atomic writes are synchronized
+	flags   uint64
 }
 
 func (l *Logger) Write(b []byte) (int, error) {
