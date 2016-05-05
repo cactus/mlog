@@ -5,13 +5,13 @@ import (
 	"time"
 )
 
-// PlainLogWriter writes a plain text structured log line.
+// PlainFormatWriter writes a plain text structured log line.
 // Example:
 //   2016-04-29T20:49:12Z INFO this is a log
-type PlainLogWriter struct{}
+type PlainFormatWriter struct{}
 
 // Emit constructs and formats a plain text log line, then writes it to logger
-func (l *PlainLogWriter) Emit(logger *Logger, level int, message string, extra Map) {
+func (l *PlainFormatWriter) Emit(logger *Logger, level int, message string, extra Map) {
 	sb := bufPool.Get()
 	defer bufPool.Put(sb)
 

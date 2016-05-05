@@ -9,54 +9,54 @@ import (
 	"testing"
 )
 
-func BenchmarkStructuredLogWriterBase(b *testing.B) {
+func BenchmarkJSONFormatWriterBase(b *testing.B) {
 	logger := New(ioutil.Discard, 0)
-	logWriter := &StructuredLogWriter{}
+	logWriter := &JSONFormatWriter{}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		logWriter.Emit(logger, 0, "this is a test", nil)
 	}
 }
 
-func BenchmarkStructuredLogWriterStd(b *testing.B) {
+func BenchmarkJSONFormatWriterStd(b *testing.B) {
 	logger := New(ioutil.Discard, Lstd)
-	logWriter := &StructuredLogWriter{}
+	logWriter := &JSONFormatWriter{}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		logWriter.Emit(logger, 0, "this is a test", nil)
 	}
 }
 
-func BenchmarkStructuredLogWriterTime(b *testing.B) {
+func BenchmarkJSONFormatWriterTime(b *testing.B) {
 	logger := New(ioutil.Discard, Ltimestamp)
-	logWriter := &StructuredLogWriter{}
+	logWriter := &JSONFormatWriter{}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		logWriter.Emit(logger, 0, "this is a test", nil)
 	}
 }
 
-func BenchmarkStructuredLogWriterShortfile(b *testing.B) {
+func BenchmarkJSONFormatWriterShortfile(b *testing.B) {
 	logger := New(ioutil.Discard, Lshortfile)
-	logWriter := &StructuredLogWriter{}
+	logWriter := &JSONFormatWriter{}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		logWriter.Emit(logger, 0, "this is a test", nil)
 	}
 }
 
-func BenchmarkStructuredLogWriterLongfile(b *testing.B) {
+func BenchmarkJSONFormatWriterLongfile(b *testing.B) {
 	logger := New(ioutil.Discard, Llongfile)
-	logWriter := &StructuredLogWriter{}
+	logWriter := &JSONFormatWriter{}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		logWriter.Emit(logger, 0, "this is a test", nil)
 	}
 }
 
-func BenchmarkStructuredLogWriterMap(b *testing.B) {
+func BenchmarkJSONFormatWriterMap(b *testing.B) {
 	logger := New(ioutil.Discard, 0)
-	logWriter := &StructuredLogWriter{}
+	logWriter := &JSONFormatWriter{}
 	m := Map{"x": 42}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
@@ -64,22 +64,9 @@ func BenchmarkStructuredLogWriterMap(b *testing.B) {
 	}
 }
 
-func BenchmarkStructuredLogWriterHugeMapUnsorted(b *testing.B) {
+func BenchmarkJSONFormatWriterHugeMap(b *testing.B) {
 	logger := New(ioutil.Discard, 0)
-	logWriter := &StructuredLogWriter{}
-	m := Map{}
-	for i := 1; i <= 100; i++ {
-		m[randString(6, false)] = randString(10, false)
-	}
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		logWriter.Emit(logger, 0, "this is a test", m)
-	}
-}
-
-func BenchmarkStructuredLogWriterHugeMapSorted(b *testing.B) {
-	logger := New(ioutil.Discard, Lsort)
-	logWriter := &StructuredLogWriter{}
+	logWriter := &JSONFormatWriter{}
 	m := Map{}
 	for i := 1; i <= 100; i++ {
 		m[randString(6, false)] = randString(10, false)
