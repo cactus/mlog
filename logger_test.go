@@ -33,6 +33,7 @@ func TestLoggerMsgs(t *testing.T) {
 		"debug2": {Llevel | Lsort | Ldebug, "debugm", "test", nil},
 		"infof1": {Llevel, "infof", "test: %d", 5},
 		"infof2": {Llevel, "infof", "test: %s", "test"},
+		"infof3": {Llevel, "infof", "test: %s %s", []interface{}{"test", "pickles"}},
 	}
 
 	buf := &bytes.Buffer{}
@@ -63,9 +64,17 @@ func TestLoggerMsgs(t *testing.T) {
 		case "info":
 			logger.Info(tt.message)
 		case "debugf":
-			logger.Debugf(tt.message, tt.extra)
+			if i, ok := tt.extra.([]interface{}); ok {
+				logger.Debugf(tt.message, i...)
+			} else {
+				logger.Debugf(tt.message, tt.extra)
+			}
 		case "infof":
-			logger.Infof(tt.message, tt.extra)
+			if i, ok := tt.extra.([]interface{}); ok {
+				logger.Infof(tt.message, i...)
+			} else {
+				logger.Infof(tt.message, tt.extra)
+			}
 		default:
 			t.Errorf("%s: not sure what to do", name)
 			continue
