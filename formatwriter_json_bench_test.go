@@ -9,54 +9,54 @@ import (
 	"testing"
 )
 
-func BenchmarkJSONFormatWriterBase(b *testing.B) {
+func BenchmarkFormatWriterJSONBase(b *testing.B) {
 	logger := New(ioutil.Discard, 0)
-	logWriter := &JSONFormatWriter{}
+	logWriter := &FormatWriterJSON{}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		logWriter.Emit(logger, 0, "this is a test", nil)
 	}
 }
 
-func BenchmarkJSONFormatWriterStd(b *testing.B) {
+func BenchmarkFormatWriterJSONStd(b *testing.B) {
 	logger := New(ioutil.Discard, Lstd)
-	logWriter := &JSONFormatWriter{}
+	logWriter := &FormatWriterJSON{}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		logWriter.Emit(logger, 0, "this is a test", nil)
 	}
 }
 
-func BenchmarkJSONFormatWriterTime(b *testing.B) {
+func BenchmarkFormatWriterJSONTime(b *testing.B) {
 	logger := New(ioutil.Discard, Ltimestamp)
-	logWriter := &JSONFormatWriter{}
+	logWriter := &FormatWriterJSON{}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		logWriter.Emit(logger, 0, "this is a test", nil)
 	}
 }
 
-func BenchmarkJSONFormatWriterShortfile(b *testing.B) {
+func BenchmarkFormatWriterJSONShortfile(b *testing.B) {
 	logger := New(ioutil.Discard, Lshortfile)
-	logWriter := &JSONFormatWriter{}
+	logWriter := &FormatWriterJSON{}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		logWriter.Emit(logger, 0, "this is a test", nil)
 	}
 }
 
-func BenchmarkJSONFormatWriterLongfile(b *testing.B) {
+func BenchmarkFormatWriterJSONLongfile(b *testing.B) {
 	logger := New(ioutil.Discard, Llongfile)
-	logWriter := &JSONFormatWriter{}
+	logWriter := &FormatWriterJSON{}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		logWriter.Emit(logger, 0, "this is a test", nil)
 	}
 }
 
-func BenchmarkJSONFormatWriterMap(b *testing.B) {
+func BenchmarkFormatWriterJSONMap(b *testing.B) {
 	logger := New(ioutil.Discard, 0)
-	logWriter := &JSONFormatWriter{}
+	logWriter := &FormatWriterJSON{}
 	m := Map{"x": 42}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
@@ -64,9 +64,9 @@ func BenchmarkJSONFormatWriterMap(b *testing.B) {
 	}
 }
 
-func BenchmarkJSONFormatWriterHugeMap(b *testing.B) {
+func BenchmarkFormatWriterJSONHugeMap(b *testing.B) {
 	logger := New(ioutil.Discard, 0)
-	logWriter := &JSONFormatWriter{}
+	logWriter := &FormatWriterJSON{}
 	m := Map{}
 	for i := 1; i <= 100; i++ {
 		m[randString(6, false)] = randString(10, false)

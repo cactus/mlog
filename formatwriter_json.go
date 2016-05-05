@@ -7,13 +7,13 @@ import (
 	"time"
 )
 
-// JSONFormatWriter writes a json structured log line.
+// FormatWriterJSON writes a json structured log line.
 // Example:
 //   {"time": "2016-04-29T20:49:12Z", "level": "I", "msg": "this is a log"}
-type JSONFormatWriter struct{}
+type FormatWriterJSON struct{}
 
 // Emit constructs and formats a json log line, then writes it to logger
-func (j *JSONFormatWriter) Emit(logger *Logger, level int, message string, extra Map) {
+func (j *FormatWriterJSON) Emit(logger *Logger, level int, message string, extra Map) {
 	sb := bufPool.Get()
 	defer bufPool.Put(sb)
 

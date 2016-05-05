@@ -9,54 +9,54 @@ import (
 	"testing"
 )
 
-func BenchmarkStructuredFormatWriterBase(b *testing.B) {
+func BenchmarkFormatWriterStructuredBase(b *testing.B) {
 	logger := New(ioutil.Discard, 0)
-	logWriter := &StructuredFormatWriter{}
+	logWriter := &FormatWriterStructured{}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		logWriter.Emit(logger, 0, "this is a test", nil)
 	}
 }
 
-func BenchmarkStructuredFormatWriterStd(b *testing.B) {
+func BenchmarkFormatWriterStructuredStd(b *testing.B) {
 	logger := New(ioutil.Discard, Lstd)
-	logWriter := &StructuredFormatWriter{}
+	logWriter := &FormatWriterStructured{}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		logWriter.Emit(logger, 0, "this is a test", nil)
 	}
 }
 
-func BenchmarkStructuredFormatWriterTime(b *testing.B) {
+func BenchmarkFormatWriterStructuredTime(b *testing.B) {
 	logger := New(ioutil.Discard, Ltimestamp)
-	logWriter := &StructuredFormatWriter{}
+	logWriter := &FormatWriterStructured{}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		logWriter.Emit(logger, 0, "this is a test", nil)
 	}
 }
 
-func BenchmarkStructuredFormatWriterShortfile(b *testing.B) {
+func BenchmarkFormatWriterStructuredShortfile(b *testing.B) {
 	logger := New(ioutil.Discard, Lshortfile)
-	logWriter := &StructuredFormatWriter{}
+	logWriter := &FormatWriterStructured{}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		logWriter.Emit(logger, 0, "this is a test", nil)
 	}
 }
 
-func BenchmarkStructuredFormatWriterLongfile(b *testing.B) {
+func BenchmarkFormatWriterStructuredLongfile(b *testing.B) {
 	logger := New(ioutil.Discard, Llongfile)
-	logWriter := &StructuredFormatWriter{}
+	logWriter := &FormatWriterStructured{}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		logWriter.Emit(logger, 0, "this is a test", nil)
 	}
 }
 
-func BenchmarkStructuredFormatWriterMap(b *testing.B) {
+func BenchmarkFormatWriterStructuredMap(b *testing.B) {
 	logger := New(ioutil.Discard, 0)
-	logWriter := &StructuredFormatWriter{}
+	logWriter := &FormatWriterStructured{}
 	m := Map{"x": 42}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
@@ -64,9 +64,9 @@ func BenchmarkStructuredFormatWriterMap(b *testing.B) {
 	}
 }
 
-func BenchmarkStructuredFormatWriterHugeMapUnsorted(b *testing.B) {
+func BenchmarkFormatWriterStructuredHugeMapUnsorted(b *testing.B) {
 	logger := New(ioutil.Discard, 0)
-	logWriter := &StructuredFormatWriter{}
+	logWriter := &FormatWriterStructured{}
 	m := Map{}
 	for i := 1; i <= 100; i++ {
 		m[randString(6, false)] = randString(10, false)
@@ -77,9 +77,9 @@ func BenchmarkStructuredFormatWriterHugeMapUnsorted(b *testing.B) {
 	}
 }
 
-func BenchmarkStructuredFormatWriterHugeMapSorted(b *testing.B) {
+func BenchmarkFormatWriterStructuredHugeMapSorted(b *testing.B) {
 	logger := New(ioutil.Discard, Lsort)
-	logWriter := &StructuredFormatWriter{}
+	logWriter := &FormatWriterStructured{}
 	m := Map{}
 	for i := 1; i <= 100; i++ {
 		m[randString(6, false)] = randString(10, false)

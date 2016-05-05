@@ -12,8 +12,8 @@ import (
 	"sync/atomic"
 )
 
-// FormatWriter is the interface implemented by mlog logging format writers.
-type FormatWriter interface {
+// Emitter is the interface implemented by mlog logging format writers.
+type Emitter interface {
 	Emit(logger *Logger, level int, message string, extra Map)
 }
 
@@ -21,7 +21,7 @@ type FormatWriter interface {
 // provides support for a toggle-able debug flag.
 type Logger struct {
 	out   io.Writer
-	fw    FormatWriter
+	e     Emitter
 	mu    sync.Mutex // ensures atomic writes are synchronized
 	flags uint64
 }
@@ -35,14 +35,14 @@ func (l *Logger) Write(b []byte) (int, error) {
 
 // Emit invokes the FormatWriter and logs the event.
 func (l *Logger) Emit(level int, message string, extra Map) {
-	l.fw.Emit(l, level, message, extra)
+	l.e.Emit(l, level, message, extra)
 }
 
-// SetFormatWriter sets the FormatWriter
-func (l *Logger) SetFormatWriter(w FormatWriter) {
+// SetEmitter sets the Emitter
+func (l *Logger) SetEmitter(e Emitter) {
 	l.mu.Lock()
 	defer l.mu.Unlock()
-	l.fw = w
+	l.e = e
 }
 
 // Flags retuns the current FlagSet
@@ -139,14 +139,14 @@ func (l *Logger) Fatal(v ...interface{}) {
 
 // New creates a new Logger.
 func New(out io.Writer, flags FlagSet) *Logger {
-	return NewFormatLogger(out, flags, &StructuredFormatWriter{})
+	return NewFormatLogger(out, flags, &FormatWriterStructured{})
 }
 
-// New creates a new Logger, using the specified FormatWriter.
-func NewFormatLogger(out io.Writer, flags FlagSet, w FormatWriter) *Logger {
+// New creates a new Logger, using the specified Emitter.
+func NewFormatLogger(out io.Writer, flags FlagSet, e Emitter) *Logger {
 	return &Logger{
 		out:   out,
 		flags: uint64(flags),
-		fw:    w,
+		e:     e,
 	}
 }

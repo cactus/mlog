@@ -9,54 +9,54 @@ import (
 	"testing"
 )
 
-func BenchmarkPlainFormatWriterBase(b *testing.B) {
+func BenchmarkFormatWriterPlainBase(b *testing.B) {
 	logger := New(ioutil.Discard, 0)
-	logWriter := &PlainFormatWriter{}
+	logWriter := &FormatWriterPlain{}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		logWriter.Emit(logger, 0, "this is a test", nil)
 	}
 }
 
-func BenchmarkPlainFormatWriterStd(b *testing.B) {
+func BenchmarkFormatWriterPlainStd(b *testing.B) {
 	logger := New(ioutil.Discard, Lstd)
-	logWriter := &PlainFormatWriter{}
+	logWriter := &FormatWriterPlain{}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		logWriter.Emit(logger, 0, "this is a test", nil)
 	}
 }
 
-func BenchmarkPlainFormatWriterTime(b *testing.B) {
+func BenchmarkFormatWriterPlainTime(b *testing.B) {
 	logger := New(ioutil.Discard, Ltimestamp)
-	logWriter := &PlainFormatWriter{}
+	logWriter := &FormatWriterPlain{}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		logWriter.Emit(logger, 0, "this is a test", nil)
 	}
 }
 
-func BenchmarkPlainFormatWriterShortfile(b *testing.B) {
+func BenchmarkFormatWriterPlainShortfile(b *testing.B) {
 	logger := New(ioutil.Discard, Lshortfile)
-	logWriter := &PlainFormatWriter{}
+	logWriter := &FormatWriterPlain{}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		logWriter.Emit(logger, 0, "this is a test", nil)
 	}
 }
 
-func BenchmarkPlainFormatWriterLongfile(b *testing.B) {
+func BenchmarkFormatWriterPlainLongfile(b *testing.B) {
 	logger := New(ioutil.Discard, Llongfile)
-	logWriter := &PlainFormatWriter{}
+	logWriter := &FormatWriterPlain{}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		logWriter.Emit(logger, 0, "this is a test", nil)
 	}
 }
 
-func BenchmarkPlainFormatWriterMap(b *testing.B) {
+func BenchmarkFormatWriterPlainMap(b *testing.B) {
 	logger := New(ioutil.Discard, 0)
-	logWriter := &PlainFormatWriter{}
+	logWriter := &FormatWriterPlain{}
 	m := Map{"x": 42}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
@@ -64,9 +64,9 @@ func BenchmarkPlainFormatWriterMap(b *testing.B) {
 	}
 }
 
-func BenchmarkPlainFormatWriterHugeMapUnsorted(b *testing.B) {
+func BenchmarkFormatWriterPlainHugeMapUnsorted(b *testing.B) {
 	logger := New(ioutil.Discard, 0)
-	logWriter := &PlainFormatWriter{}
+	logWriter := &FormatWriterPlain{}
 	m := Map{}
 	for i := 1; i <= 100; i++ {
 		m[randString(6, false)] = randString(10, false)
@@ -77,9 +77,9 @@ func BenchmarkPlainFormatWriterHugeMapUnsorted(b *testing.B) {
 	}
 }
 
-func BenchmarkPlainFormatWriterHugeMapSorted(b *testing.B) {
+func BenchmarkFormatWriterPlainHugeMapSorted(b *testing.B) {
 	logger := New(ioutil.Discard, Lsort)
-	logWriter := &PlainFormatWriter{}
+	logWriter := &FormatWriterPlain{}
 	m := Map{}
 	for i := 1; i <= 100; i++ {
 		m[randString(6, false)] = randString(10, false)

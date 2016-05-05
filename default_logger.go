@@ -8,10 +8,10 @@ import (
 // DefaultLogger is the default package level Logger
 var DefaultLogger = New(os.Stderr, Lstd)
 
-// SetFormatWriter sets the FormatWriter for the degault logger. See
-// Logger.SetFormatter.
-func SetFormatWriter(w FormatWriter) {
-	DefaultLogger.SetFormatWriter(w)
+// SetEmitter sets the Emitter for the degault logger. See
+// Logger.SetEmitter.
+func SetEmitter(e Emitter) {
+	DefaultLogger.SetEmitter(e)
 }
 
 // Flags returns the FlagSet of the default Logger. See Logger.Flags.

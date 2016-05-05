@@ -5,13 +5,13 @@ import (
 	"time"
 )
 
-// StructuredFormatWriter writes a plain text structured log line.
+// FormatWriterStructured writes a plain text structured log line.
 // Example:
 //   time="2016-04-29T20:49:12Z" level="I" msg="this is a log"
-type StructuredFormatWriter struct{}
+type FormatWriterStructured struct{}
 
 // Emit constructs and formats a plain text log line, then writes it to logger
-func (l *StructuredFormatWriter) Emit(logger *Logger, level int, message string, extra Map) {
+func (l *FormatWriterStructured) Emit(logger *Logger, level int, message string, extra Map) {
 	sb := bufPool.Get()
 	defer bufPool.Put(sb)
 
