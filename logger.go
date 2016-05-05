@@ -20,10 +20,10 @@ type FormatWriter interface {
 // A Logger represents a logging object, that embeds log.Logger, and
 // provides support for a toggle-able debug flag.
 type Logger struct {
-	out     io.Writer
-	fwriter FormatWriter
-	mu      sync.Mutex // ensures atomic writes are synchronized
-	flags   uint64
+	out   io.Writer
+	fw    FormatWriter
+	mu    sync.Mutex // ensures atomic writes are synchronized
+	flags uint64
 }
 
 func (l *Logger) Write(b []byte) (int, error) {
@@ -35,14 +35,14 @@ func (l *Logger) Write(b []byte) (int, error) {
 
 // Emit invokes the FormatWriter and logs the event.
 func (l *Logger) Emit(level int, message string, extra Map) {
-	l.fwriter.Emit(l, level, message, extra)
+	l.fw.Emit(l, level, message, extra)
 }
 
 // SetFormatWriter sets the FormatWriter
 func (l *Logger) SetFormatWriter(w FormatWriter) {
 	l.mu.Lock()
 	defer l.mu.Unlock()
-	l.fwriter = w
+	l.fw = w
 }
 
 // Flags retuns the current FlagSet
@@ -138,11 +138,15 @@ func (l *Logger) Fatal(v ...interface{}) {
 }
 
 // New creates a new Logger.
-// The debug argument specifies whether debug should be set or not.
 func New(out io.Writer, flags FlagSet) *Logger {
+	return NewFormatLogger(out, flags, &StructuredFormatWriter{})
+}
+
+// New creates a new Logger, using the specified FormatWriter.
+func NewFormatLogger(out io.Writer, flags FlagSet, w FormatWriter) *Logger {
 	return &Logger{
-		out:     out,
-		flags:   uint64(flags),
-		fwriter: &StructuredFormatWriter{},
+		out:   out,
+		flags: uint64(flags),
+		fw:    w,
 	}
 }
