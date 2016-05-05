@@ -5,13 +5,13 @@ import (
 	"time"
 )
 
-// PlainLogWriter writes a plain text structured log line.
+// StructuredLogWriter writes a plain text structured log line.
 // Example:
-//   2016-04-29T20:49:12Z INFO this is a log
-type PlainLogWriter struct{}
+//   time="2016-04-29T20:49:12Z" level="I" msg="this is a log"
+type StructuredLogWriter struct{}
 
 // Emit constructs and formats a plain text log line, then writes it to logger
-func (l *PlainLogWriter) Emit(logger *Logger, level int, message string, extra Map) {
+func (l *StructuredLogWriter) Emit(logger *Logger, level int, message string, extra Map) {
 	sb := bufPool.Get()
 	defer bufPool.Put(sb)
 
@@ -20,19 +20,22 @@ func (l *PlainLogWriter) Emit(logger *Logger, level int, message string, extra M
 	// if time is being logged, handle time as soon as possible
 	if flags&Ltimestamp != 0 {
 		t := time.Now()
+		sb.WriteString(`time="`)
 		writeTime(sb, &t, flags)
-		sb.WriteByte(' ')
+		sb.WriteString(`" `)
 	}
 
 	if flags&Llevel != 0 {
+		sb.WriteString(`level="`)
 		switch level {
 		case -1:
-			sb.WriteString(`DEBUG `)
+			sb.WriteByte('D')
 		case 1:
-			sb.WriteString(`FATAL `)
+			sb.WriteByte('F')
 		default:
-			sb.WriteString(`INFO `)
+			sb.WriteByte('I')
 		}
+		sb.WriteString(`" `)
 	}
 
 	if flags&(Lshortfile|Llongfile) != 0 {
@@ -53,12 +56,14 @@ func (l *PlainLogWriter) Emit(logger *Logger, level int, message string, extra M
 			file = short
 		}
 
+		sb.WriteString(`caller="`)
 		sb.WriteString(file)
 		sb.WriteByte(':')
 		sb.AppendIntWidth(line, 0)
-		sb.WriteByte(' ')
+		sb.WriteString(`" `)
 	}
 
+	sb.WriteString(`msg="`)
 	// as a kindness, strip any newlines off the end of the string
 	for i := len(message) - 1; i > 0; i-- {
 		if message[i] == '\n' {
@@ -68,6 +73,7 @@ func (l *PlainLogWriter) Emit(logger *Logger, level int, message string, extra M
 		}
 	}
 	sb.WriteString(message)
+	sb.WriteByte('"')
 
 	if extra != nil && len(extra) > 0 {
 		sb.WriteByte(' ')

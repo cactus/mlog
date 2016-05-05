@@ -138,6 +138,6 @@ func New(out io.Writer, flags FlagSet) *Logger {
 	return &Logger{
 		out:     out,
 		flags:   uint64(flags),
-		fwriter: &PlainLogWriter{},
+		fwriter: &StructuredLogWriter{},
 	}
 }
