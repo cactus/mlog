@@ -6,122 +6,82 @@ package mlog
 
 import (
 	"bytes"
+	"flag"
+	"fmt"
 	"io/ioutil"
-	"regexp"
+	"path/filepath"
 	"testing"
 	"time"
 
 	"github.com/stretchr/testify/assert"
 )
 
-type tester struct {
-	level   string
-	pattern string
-	message string
-	extra   Map
-}
+var update = flag.Bool("update", false, "update golden files")
 
-var infoTests = []tester{
-	{
-		"info",
-		`level="I" msg="test one %d" x="y"`,
-		"test one %d",
-		Map{"x": "y"},
-	},
-	{
-		"info",
-		`level="I" msg="test one %d" x="y"`,
-		"test one %d",
-		Map{"x": "y"},
-	},
-	{
-		"info",
-		`level="I" msg="test one" t="u" u="v" x="y" y="z"`,
-		"test one",
-		Map{"x": "y", "y": "z", "t": "u", "u": "v"},
-	},
-	{
-		"info",
-		`level="I" msg="test one" t="u" u="v" x="y" y="z"`,
-		"test one",
-		Map{"y": "z", "x": "y", "u": "v", "t": "u"},
-	},
-	{
-		"info",
-		`level="I" msg="test one" haz_string="such tests" x="1" y="2" z="3"`,
-		"test one",
-		Map{
-			"x":          1,
-			"y":          2,
-			"z":          3,
-			"haz_string": "such tests",
-		},
-	},
-}
+func TestLoggerMsgs(t *testing.T) {
+	var infoTests = map[string]struct {
+		flags   FlagSet
+		method  string
+		message string
+		extra   interface{}
+	}{
+		"infom1": {Llevel | Lsort, "infom", "test", Map{"x": "y"}},
+		"infom2": {Llevel | Lsort, "infom", "test", Map{"x": "y", "y": "z", "t": "u", "u": "v"}},
+		"infom3": {Llevel | Lsort, "infom", "test", Map{"y": "z", "x": "y", "u": "v", "t": "u"}},
+		"infom4": {Llevel | Lsort, "infom", "test", Map{"x": 1, "y": 2, "z": 3, "haz_string": "such tests"}},
+		"debug1": {Llevel | Lsort | Ldebug, "debugm", "test", nil},
+		"debug2": {Llevel | Lsort | Ldebug, "debugm", "test", nil},
+		"infof1": {Llevel, "infof", "test: %d", 5},
+		"infof2": {Llevel, "infof", "test: %s", "test"},
+	}
 
-var debugTests = []tester{
-	{
-		"debug",
-		`level="D" msg="test: %s %d"`,
-		"test: %s %d",
-		Map{},
-	},
-}
-
-func testInfom(t *testing.T, logger *Logger, level, message, pattern string, extra Map) {
 	buf := &bytes.Buffer{}
+	logger := New(ioutil.Discard, Llevel|Lsort)
 	logger.out = buf
 
-	switch level {
-	case "debug":
-		logger.Debugm(message, extra)
-	default:
-		logger.Infom(message, extra)
-	}
-	line := buf.String()
+	for name, tt := range infoTests {
+		buf.Truncate(0)
+		logger.flags = uint64(tt.flags)
 
-	if len(line) == 0 && len(pattern) != 0 {
-		t.Errorf("log output should match\n%12s %q\n%12s %q",
-			"expected:", pattern[1:len(pattern)-1],
-			"actual:", line)
-		return
+		switch tt.method {
+		case "debugm":
+			m, ok := tt.extra.(Map)
+			if !ok && tt.extra != nil {
+				t.Errorf("%s: failed type assertion", name)
+				continue
+			}
+			logger.Debugm(tt.message, m)
+		case "infom":
+			m, ok := tt.extra.(Map)
+			if !ok && tt.extra != nil {
+				t.Errorf("%s: failed type assertion", name)
+				continue
+			}
+			logger.Infom(tt.message, m)
+		case "debug":
+			logger.Debug(tt.message)
+		case "info":
+			logger.Info(tt.message)
+		case "debugf":
+			logger.Debugf(tt.message, tt.extra)
+		case "infof":
+			logger.Infof(tt.message, tt.extra)
+		default:
+			t.Errorf("%s: not sure what to do", name)
+			continue
+		}
+		actual := buf.Bytes()
+		golden := filepath.Join("test-fixtures", fmt.Sprintf("test_logger_msgs.%s.golden", name))
+		if *update {
+			ioutil.WriteFile(golden, actual, 0644)
+		}
+		expected, _ := ioutil.ReadFile(golden)
+		assert.Equal(t, string(expected), string(actual), "%s: did not match expectation", name)
 	}
 
-	line = line[0 : len(line)-1]
-	pattern = "^" + pattern + "$"
-	matched, err := regexp.MatchString(pattern, line)
-	if err != nil {
-		t.Fatal("pattern did not compile:", err)
-	}
-	if !matched {
-		t.Errorf("log output should match\n%12s %q\n%12s %q",
-			"expected:", pattern[1:len(pattern)-1],
-			"actual:", line)
-	}
 }
 
-func TestAllInfom(t *testing.T) {
-	logger := New(ioutil.Discard, Llevel|Lsort)
-	for _, tt := range infoTests {
-		testInfom(t, logger, tt.level, tt.message, tt.pattern, tt.extra)
-		testInfom(t, logger, tt.level, tt.message, tt.pattern, tt.extra)
-	}
-}
-
-func TestAllDebug(t *testing.T) {
-	logger := New(ioutil.Discard, Llevel|Lsort|Ldebug)
-	for _, tt := range debugTests {
-		testInfom(t, logger, tt.level, tt.message, tt.pattern, tt.extra)
-		testInfom(t, logger, tt.level, tt.message, tt.pattern, tt.extra)
-	}
-}
-
-func TestOnce(t *testing.T) {
-	logger := New(ioutil.Discard, Lstd)
-	logger.Infom("test this", Map{"test": 1})
-}
-
-func TestTimestampLog(t *testing.T) {
+func TestLoggerTimestamp(t *testing.T) {
 	buf := &bytes.Buffer{}
 
 	// test nanoseconds
