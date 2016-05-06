@@ -79,6 +79,13 @@ func main() {
     mlog.Debugf("a printf style debug log: %s", "here!")
     mlog.Infof("a printf style info log: %s", "here!")
 
+    // how about logging in json?
+    mlog.SetEmitter(&mlog.FormatWriterJSON{})
+    mlog.Infom("something", mlog.Map{
+        "one": "two",
+        "three":  3,
+    })
+
     mlog.Fatalm("time for a nap", mlog.Map{"cleanup": false})
 }
 ```
@@ -93,7 +100,8 @@ time="2016-04-29T19:59:11-07:00" msg="now this will print!"
 time="2016-04-29T19:59:11-07:00" msg="can it print?" this_too="if fmt.Print can print it!" how_fancy="[118 101 114 121 33]"
 time="2016-04-29T19:59:11-07:00" msg="a printf style debug log: here!"
 time="2016-04-29T19:59:11-07:00" msg="a printf style info log: here!"
-time="2016-04-29T19:59:11-07:00" msg="time for a nap" cleanup="false"
+{"time": "2016-04-29T19:59:11-07:00", "msg": "something" "extra": {"one": "two", "three": "3"}}
+{"time": "2016-04-29T19:59:11-07:00", "msg": "time for a nap" "extra": {"cleanup": "false"}}
 exit status 1
 ```
 
