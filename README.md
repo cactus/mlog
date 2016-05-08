@@ -12,7 +12,8 @@ mlog only has 3 logging levels: Debug, Info, and Fatal.
 
 ### Why only 3 levels?
 
-[Over here][1] Dave Cheney has a good explanation of the reasoning.
+Dave Cheney [wrote a great post][1], that made me think more about logging, and
+prompted me to start writing mlog.
 
 ### How does it work?
 
