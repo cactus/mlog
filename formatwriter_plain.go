@@ -31,7 +31,7 @@ func (l *FormatWriterPlain) Emit(logger *Logger, level int, message string, extr
 		case 1:
 			sb.WriteString(`FATAL `)
 		default:
-			sb.WriteString(`INFO `)
+			sb.WriteString(`INFO  `)
 		}
 	}
 
