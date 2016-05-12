@@ -79,8 +79,9 @@ func (sb *sliceBuffer) WriteString(s string) (int, error) {
 	return len(s), nil
 }
 
-func (sb *sliceBuffer) WriteTo(w io.Writer) (int, error) {
-	return w.Write(sb.data)
+func (sb *sliceBuffer) WriteTo(w io.Writer) (int64, error) {
+	n, err := w.Write(sb.data)
+	return int64(n), err
 }
 
 func (sb *sliceBuffer) Bytes() []byte {

@@ -45,7 +45,7 @@ func (l *Logger) SetEmitter(e Emitter) {
 	l.e = e
 }
 
-// Flags retuns the current FlagSet
+// Flags returns the current FlagSet
 func (l *Logger) Flags() FlagSet {
 	return FlagSet(atomic.LoadUint64(&l.flags))
 }
@@ -142,7 +142,7 @@ func New(out io.Writer, flags FlagSet) *Logger {
 	return NewFormatLogger(out, flags, &FormatWriterStructured{})
 }
 
-// New creates a new Logger, using the specified Emitter.
+// NewFormatLogger creates a new Logger, using the specified Emitter.
 func NewFormatLogger(out io.Writer, flags FlagSet, e Emitter) *Logger {
 	return &Logger{
 		out:   out,
