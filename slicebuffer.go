@@ -28,12 +28,16 @@ func (sp *sliceBufferPool) Put(c *sliceBuffer) {
 	sp.Pool.Put(c)
 }
 
-type sliceWriter interface {
+type byteSliceWriter interface {
 	Write([]byte) (int, error)
 	WriteByte(byte) error
 	WriteString(string) (int, error)
-	AppendIntWidth(int, int)
 	Truncate(int)
+}
+
+type intSliceWriter interface {
+	byteSliceWriter
+	AppendIntWidth(int, int)
 }
 
 type sliceBuffer struct {
@@ -41,6 +45,30 @@ type sliceBuffer struct {
 }
 
 func (sb *sliceBuffer) AppendIntWidth(i int, wid int) {
+	digits := 0
+	// write digits backwards (easier/faster)
+	for i >= 10 {
+		q := i / 10
+		sb.data = append(sb.data, byte('0'+i-q*10))
+		i = q
+		digits++
+	}
+	sb.data = append(sb.data, byte('0'+i))
+	digits++
+
+	for j := wid - digits; j > 0; j-- {
+		sb.data = append(sb.data, '0')
+		digits++
+	}
+
+	// reverse to proper order
+	sblen := len(sb.data)
+	for i, j := sblen-digits, sblen-1; i < j; i, j = i+1, j-1 {
+		sb.data[i], sb.data[j] = sb.data[j], sb.data[i]
+	}
+}
+
+func (sb *sliceBuffer) AppendInt64Width(i int64, wid int) {
 	digits := 0
 	// write digits backwards (easier/faster)
 	for i >= 10 {

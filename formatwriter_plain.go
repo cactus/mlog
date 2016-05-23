@@ -3,6 +3,7 @@ package mlog
 import (
 	"runtime"
 	"time"
+	"unicode/utf8"
 )
 
 // FormatWriterPlain a plain text structured log line.
@@ -59,15 +60,7 @@ func (l *FormatWriterPlain) Emit(logger *Logger, level int, message string, extr
 		sb.WriteByte(' ')
 	}
 
-	// as a kindness, strip any newlines off the end of the string
-	for i := len(message) - 1; i > 0; i-- {
-		if message[i] == '\n' {
-			message = message[:i]
-		} else {
-			break
-		}
-	}
-	sb.WriteString(message)
+	encodeStringPlain(sb, message)
 
 	if extra != nil && len(extra) > 0 {
 		sb.WriteByte(' ')
@@ -80,4 +73,42 @@ func (l *FormatWriterPlain) Emit(logger *Logger, level int, message string, extr
 
 	sb.WriteByte('\n')
 	sb.WriteTo(logger)
+}
+
+// modified from Go stdlib: encoding/json/encode.go:787-862 (approx)
+func encodeStringPlain(e byteSliceWriter, s string) {
+	for i := 0; i < len(s); {
+		if b := s[i]; b < utf8.RuneSelf {
+			i++
+			if 0x20 <= b {
+				e.WriteByte(b)
+				continue
+			}
+
+			switch b {
+			case '\n':
+				e.WriteByte('\\')
+				e.WriteByte('n')
+			case '\r':
+				e.WriteByte('\\')
+				e.WriteByte('r')
+			case '\t':
+				e.WriteByte('\\')
+				e.WriteByte('t')
+			default:
+				e.WriteByte(b)
+			}
+			continue
+		}
+
+		c, size := utf8.DecodeRuneInString(s[i:])
+		if c == utf8.RuneError && size == 1 {
+			e.WriteString(`\ufffd`)
+			i++
+			continue
+		}
+
+		e.WriteString(s[i : i+size])
+		i += size
+	}
 }

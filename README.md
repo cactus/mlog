@@ -61,7 +61,7 @@ func main() {
         },
     )
 
-    mlog.Info("this is a log with more data", thing)
+    mlog.Infom("this is also a log with more data", thing)
 
     mlog.Debug("this won't print")
 
@@ -97,9 +97,9 @@ Output:
 ```
 time="2016-04-29T19:59:11-07:00" level="I" msg="this is a log"
 time="2016-04-29T19:59:11-07:00" level="I" msg="this is a log with more data" interesting="data" something="42"
-time="2016-04-29T19:59:11-07:00" level="I" msg="this is a log with more datawhat‽="yup" this-works?="as long as it is a mlog.Map""
+time="2016-04-29T19:59:11-07:00" level="I" msg="this is also a log with more data" this-works?="as long as it is a mlog.Map" what‽="yup"
 time="2016-04-29T19:59:11-07:00" msg="now this will print!"
-time="2016-04-29T19:59:11-07:00" msg="can it print?" this_too="if fmt.Print can print it!" how_fancy="[118 101 114 121 33]"
+time="2016-04-29T19:59:11-07:00" msg="can it print?" how_fancy="[118 101 114 121 33]" this_too="if fmt.Print can print it!"
 time="2016-04-29T19:59:11-07:00" msg="a printf style debug log: here!"
 time="2016-04-29T19:59:11-07:00" msg="a printf style info log: here!"
 {"time": "2016-04-29T19:59:11-07:00", "msg": "something" "extra": {"one": "two", "three": "3"}}
