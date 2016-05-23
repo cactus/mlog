@@ -94,7 +94,7 @@ func TestLoggerTimestamp(t *testing.T) {
 	buf := &bytes.Buffer{}
 
 	// test nanoseconds
-	logger := New(buf, Lstd|Lnanoseconds)
+	logger := New(buf, Lstd)
 	tnow := time.Now()
 	logger.Info("test this")
 	ts := bytes.Split(buf.Bytes()[6:], []byte{'"'})[0]
@@ -105,7 +105,7 @@ func TestLoggerTimestamp(t *testing.T) {
 	buf.Truncate(0)
 
 	// test microeconds
-	logger.SetFlags(Lstd | Lmicroseconds)
+	logger.SetFlags(Lstd)
 	tnow = time.Now()
 	logger.Info("test this")
 	ts = bytes.Split(buf.Bytes()[6:], []byte{'"'})[0]

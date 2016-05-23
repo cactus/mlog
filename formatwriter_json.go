@@ -23,10 +23,14 @@ func (j *FormatWriterJSON) Emit(logger *Logger, level int, message string, extra
 
 	sb.WriteByte('{')
 	// if time is being logged, handle time as soon as possible
-	if flags&Ltimestamp != 0 {
+	if flags&(Ltimestamp|Ltai64n) != 0 {
 		t := time.Now()
 		sb.WriteString(`"time": "`)
-		writeTime(sb, &t, flags)
+		if flags&Ltai64n != 0 {
+			writeTimeTAI64N(sb, &t, flags)
+		} else {
+			writeTime(sb, &t, flags)
+		}
 		sb.WriteString(`", `)
 	}
 

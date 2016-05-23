@@ -38,6 +38,7 @@ type byteSliceWriter interface {
 type intSliceWriter interface {
 	byteSliceWriter
 	AppendIntWidth(int, int)
+	AppendIntWidthHex(int64, int)
 }
 
 type sliceBuffer struct {
@@ -68,16 +69,20 @@ func (sb *sliceBuffer) AppendIntWidth(i int, wid int) {
 	}
 }
 
-func (sb *sliceBuffer) AppendInt64Width(i int64, wid int) {
+const hexdigits = "0123456789abcdefghijklmnopqrstuvwxyz"
+
+func (sb *sliceBuffer) AppendIntWidthHex(i int64, wid int) {
+	u := uint64(i)
+
 	digits := 0
-	// write digits backwards (easier/faster)
-	for i >= 10 {
-		q := i / 10
-		sb.data = append(sb.data, byte('0'+i-q*10))
-		i = q
+	b := uint64(16)
+	m := uintptr(b) - 1
+	for u >= b {
+		sb.data = append(sb.data, hexdigits[uintptr(u)&m])
+		u >>= 4
 		digits++
 	}
-	sb.data = append(sb.data, byte('0'+i))
+	sb.data = append(sb.data, hexdigits[uintptr(u)])
 	digits++
 
 	for j := wid - digits; j > 0; j-- {

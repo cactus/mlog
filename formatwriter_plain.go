@@ -19,9 +19,13 @@ func (l *FormatWriterPlain) Emit(logger *Logger, level int, message string, extr
 	flags := logger.Flags()
 
 	// if time is being logged, handle time as soon as possible
-	if flags&Ltimestamp != 0 {
+	if flags&(Ltimestamp|Ltai64n) != 0 {
 		t := time.Now()
-		writeTime(sb, &t, flags)
+		if flags&Ltai64n != 0 {
+			writeTimeTAI64N(sb, &t, flags)
+		} else {
+			writeTime(sb, &t, flags)
+		}
 		sb.WriteByte(' ')
 	}
 
