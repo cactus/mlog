@@ -95,15 +95,15 @@ func main() {
 Output:
 
 ```
-time="2016-04-29T19:59:11-07:00" level="I" msg="this is a log"
-time="2016-04-29T19:59:11-07:00" level="I" msg="this is a log with more data" interesting="data" something="42"
-time="2016-04-29T19:59:11-07:00" level="I" msg="this is also a log with more data" this-works?="as long as it is a mlog.Map" what‽="yup"
-time="2016-04-29T19:59:11-07:00" msg="now this will print!"
-time="2016-04-29T19:59:11-07:00" msg="can it print?" how_fancy="[118 101 114 121 33]" this_too="if fmt.Print can print it!"
-time="2016-04-29T19:59:11-07:00" msg="a printf style debug log: here!"
-time="2016-04-29T19:59:11-07:00" msg="a printf style info log: here!"
-{"time": "2016-04-29T19:59:11-07:00", "msg": "something" "extra": {"one": "two", "three": "3"}}
-{"time": "2016-04-29T19:59:11-07:00", "msg": "time for a nap" "extra": {"cleanup": "false"}}
+time="2016-04-29T19:59:11.474362716-07:00" level="I" msg="this is a log"
+time="2016-04-29T19:59:11.474506079-07:00" level="I" msg="this is a log with more data" interesting="data" something="42"
+time="2016-04-29T19:59:11.474523514-07:00" level="I" msg="this is also a log with more data" this-works?="as long as it is a mlog.Map" what‽="yup"
+time="2016-04-29T19:59:11.474535676-07:00" msg="now this will print!"
+time="2016-04-29T19:59:11.474542467-07:00" msg="can it print?" how_fancy="[118 101 114 121 33]" this_too="if fmt.Print can print it!"
+time="2016-04-29T19:59:11.474551625-07:00" msg="a printf style debug log: here!"
+time="2016-04-29T19:59:11.474578991-07:00" msg="a printf style info log: here!"
+{"time": "2016-04-29T19:59:11.474583762-07:00", "msg": "something" "extra": {"one": "two", "three": "3"}}
+{"time": "2016-04-29T19:59:11.474604928-07:00", "msg": "time for a nap" "extra": {"cleanup": "false"}}
 exit status 1
 ```
 
