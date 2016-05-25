@@ -3,7 +3,7 @@ package mlog
 import (
 	"time"
 
-	"github.com/cactus/tai64n"
+	"github.com/cactus/tai64"
 )
 
 func writeTime(sb intSliceWriter, t *time.Time, flags FlagSet) {
@@ -45,7 +45,7 @@ func writeTime(sb intSliceWriter, t *time.Time, flags FlagSet) {
 func writeTimeTAI64N(sb intSliceWriter, t *time.Time, flags FlagSet) {
 	tu := t.UTC()
 	tux := tu.Unix()
-	offset := tai64n.GetOffsetUnix(tux)
+	offset := tai64.GetOffsetUnix(tux)
 	sb.WriteString("@4")
 	sb.AppendIntWidthHex(tux+offset, 15)
 	sb.AppendIntWidthHex(int64(tu.Nanosecond()), 8)
