@@ -87,6 +87,13 @@ func (l *Logger) Fatalm(message string, v Map) {
 	os.Exit(1)
 }
 
+// Panicm logs message and any Map elements at level="fatal", then calls
+// panic().
+func (l *Logger) Panicm(message string, v Map) {
+	l.Emit(1, message, v)
+	panic(message)
+}
+
 // Debugf formats and conditionally logs message at level="debug".
 // If the Logger does not have the Ldebug flag, nothing is logged.
 func (l *Logger) Debugf(format string, v ...interface{}) {
@@ -112,6 +119,14 @@ func (l *Logger) Fatalf(format string, v ...interface{}) {
 	os.Exit(1)
 }
 
+// Panicf formats and logs message at level="fatal", then calls
+// panic().
+func (l *Logger) Panicf(format string, v ...interface{}) {
+	s := fmt.Sprintf(format, v...)
+	l.Emit(1, s, nil)
+	panic(s)
+}
+
 // Debug conditionally logs message at level="debug".
 // If the Logger does not have the Ldebug flag, nothing is logged.
 func (l *Logger) Debug(v ...interface{}) {
@@ -135,6 +150,14 @@ func (l *Logger) Print(v ...interface{}) {
 func (l *Logger) Fatal(v ...interface{}) {
 	l.Emit(1, fmt.Sprint(v...), nil)
 	os.Exit(1)
+}
+
+// Panic logs message at level="fatal", then calls
+// panic().
+func (l *Logger) Panic(v ...interface{}) {
+	s := fmt.Sprint(v...)
+	l.Emit(1, s, nil)
+	panic(s)
 }
 
 // New creates a new Logger.
