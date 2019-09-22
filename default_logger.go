@@ -24,6 +24,12 @@ func SetFlags(flags FlagSet) {
 	DefaultLogger.SetFlags(flags)
 }
 
+// HasDebug returns true if the default Logger has debug logging FlagSet enabled.
+// See Logger.HasDebug
+func HasDebug() bool {
+	return DefaultLogger.HasDebug()
+}
+
 // Debugm logs to the default Logger. See Logger.Debugm
 func Debugm(message string, v Map) {
 	if DefaultLogger.HasDebug() {
