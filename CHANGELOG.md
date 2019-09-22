@@ -3,6 +3,9 @@ Changelog
 
 ## HEAD
 
+## 1.0.3 2019-09-22
+*   Bump some dependencies
+
 ## 1.0.2 2019-09-22
 *   Expose HasDebug for default logger
 
