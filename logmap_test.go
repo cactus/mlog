@@ -3,7 +3,8 @@ package mlog
 import (
 	"testing"
 
-	"github.com/stretchr/testify/assert"
+	"gotest.tools/v3/assert"
+	is "gotest.tools/v3/assert/cmp"
 )
 
 type discardSliceWriter struct{}
@@ -45,6 +46,6 @@ func TestLogMapWriteTo(t *testing.T) {
 	m.sortedWriteBuf(buf)
 	n := `test="this is \"a test\" of \t some \n a"`
 	l := buf.String()
-	assert.Equal(t, n, l, "did not match")
+	assert.Check(t, is.Equal(n, l), "did not match")
 
 }

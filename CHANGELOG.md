@@ -3,6 +3,9 @@ Changelog
 
 ## HEAD
 
+## 1.0.4 2021-05-28
+*   change test only dependency (test helper functions)
+
 ## 1.0.3 2019-09-22
 *   Bump some dependencies
 

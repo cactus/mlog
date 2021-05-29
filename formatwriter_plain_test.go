@@ -8,7 +8,8 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
+	"gotest.tools/v3/assert"
+	is "gotest.tools/v3/assert/cmp"
 )
 
 func TestFormatWriterPlainEncodeString(t *testing.T) {
@@ -29,6 +30,6 @@ func TestFormatWriterPlainEncodeString(t *testing.T) {
 	for name, tt := range stringTests {
 		b.Truncate(0)
 		encodeStringPlain(b, tt.input)
-		assert.Equal(t, []byte(tt.output), b.Bytes(), "%s: did not match expectation", name)
+		assert.Check(t, is.DeepEqual([]byte(tt.output), b.Bytes()), "%s: did not match expectation", name)
 	}
 }

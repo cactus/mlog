@@ -13,7 +13,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/stretchr/testify/assert"
+	"gotest.tools/v3/assert"
+	is "gotest.tools/v3/assert/cmp"
+	"gotest.tools/v3/assert/opt"
 )
 
 var update = flag.Bool("update", false, "update golden files")
@@ -94,7 +96,7 @@ func TestLoggerMsgs(t *testing.T) {
 			ioutil.WriteFile(golden, actual, 0644)
 		}
 		expected, _ := ioutil.ReadFile(golden)
-		assert.Equal(t, string(expected), string(actual), "%s: did not match expectation", name)
+		assert.Check(t, is.Equal(string(expected), string(actual)), "%s: did not match expectation", name)
 	}
 
 }
@@ -108,8 +110,8 @@ func TestLoggerTimestamp(t *testing.T) {
 	logger.Info("test this")
 	ts := bytes.Split(buf.Bytes()[6:], []byte{'"'})[0]
 	tlog, err := time.Parse(time.RFC3339Nano, string(ts))
-	assert.Nil(t, err, "Failed to parse time from log")
-	assert.WithinDuration(t, tnow, tlog, 2*time.Second, "Time not even close")
+	assert.Check(t, err, "Failed to parse time from log")
+	assert.Assert(t, is.DeepEqual(tnow, tlog, opt.TimeWithThreshold(2*time.Second)), "Time not even close")
 
 	buf.Truncate(0)
 
@@ -119,8 +121,8 @@ func TestLoggerTimestamp(t *testing.T) {
 	logger.Info("test this")
 	ts = bytes.Split(buf.Bytes()[6:], []byte{'"'})[0]
 	tlog, err = time.Parse(time.RFC3339Nano, string(ts))
-	assert.Nil(t, err, "Failed to parse time from log")
-	assert.WithinDuration(t, tnow, tlog, 2*time.Second, "Time not even close")
+	assert.Check(t, err, "Failed to parse time from log")
+	assert.Assert(t, is.DeepEqual(tnow, tlog, opt.TimeWithThreshold(2*time.Second)), "Time not even close")
 
 	buf.Truncate(0)
 
@@ -130,8 +132,8 @@ func TestLoggerTimestamp(t *testing.T) {
 	logger.Info("test this")
 	ts = bytes.Split(buf.Bytes()[6:], []byte{'"'})[0]
 	tlog, err = time.Parse(time.RFC3339Nano, string(ts))
-	assert.Nil(t, err, "Failed to parse time from log")
-	assert.WithinDuration(t, tnow, tlog, 2*time.Second, "Time not even close")
+	assert.Check(t, err, "Failed to parse time from log")
+	assert.Assert(t, is.DeepEqual(tnow, tlog, opt.TimeWithThreshold(2*time.Second)), "Time not even close")
 }
 
 func TestPanics(t *testing.T) {
@@ -183,6 +185,6 @@ func TestPanics(t *testing.T) {
 			ioutil.WriteFile(golden, actual, 0644)
 		}
 		expected, _ := ioutil.ReadFile(golden)
-		assert.Equal(t, string(expected), string(actual), "%s: did not match expectation", name)
+		assert.Check(t, is.Equal(string(expected), string(actual)), "%s: did not match expectation", name)
 	}
 }

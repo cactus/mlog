@@ -4,7 +4,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/stretchr/testify/assert"
+	"gotest.tools/v3/assert"
+	is "gotest.tools/v3/assert/cmp"
 )
 
 func TestTime(t *testing.T) {
@@ -40,7 +41,7 @@ func TestTime(t *testing.T) {
 	for _, tc := range cases {
 		b.Truncate(0)
 		writeTime(b, &(tc.T), tc.F)
-		assert.Equal(t, tc.R, b.String(), "time written incorrectly")
+		assert.Check(t, is.Equal(tc.R, b.String()), "time written incorrectly")
 	}
 }
 
@@ -77,6 +78,6 @@ func TestTimeTAI64N(t *testing.T) {
 	for _, tc := range cases {
 		b.Truncate(0)
 		writeTimeTAI64N(b, &(tc.T), tc.F)
-		assert.Equal(t, tc.R, b.String(), "time written incorrectly")
+		assert.Check(t, is.Equal(tc.R, b.String()), "time written incorrectly")
 	}
 }

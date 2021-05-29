@@ -9,7 +9,8 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
+	"gotest.tools/v3/assert"
+	is "gotest.tools/v3/assert/cmp"
 )
 
 func testEncodeString(e byteSliceWriter, s string) {
@@ -31,12 +32,12 @@ func TestFormatWriterJSONEncodeString(t *testing.T) {
 	b := &bytes.Buffer{}
 	for name, s := range jsonStringTests {
 		e, err := json.Marshal(s)
-		assert.Nil(t, err, "%s: json marshal failed", name)
+		assert.Check(t, err, "%s: json marshal failed", name)
 
 		b.Truncate(0)
 		b.WriteByte('"')
 		encodeStringJSON(b, s)
 		b.WriteByte('"')
-		assert.Equal(t, string(e), b.String(), "%s: did not match expectation", name)
+		assert.Check(t, is.Equal(string(e), b.String()), "%s: did not match expectation", name)
 	}
 }
