@@ -48,10 +48,7 @@ type FlagSet uint64
 
 // Has returns true if the FlagSet argument is in the set of flags (binary &)
 func (f *FlagSet) Has(p FlagSet) bool {
-	if *f&p != 0 {
-		return true
-	}
-	return false
+	return *f&p != 0
 }
 
 // GoString fulfills the GoStringer interface, defining the format used for
