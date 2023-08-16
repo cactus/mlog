@@ -3,6 +3,9 @@ Changelog
 
 ## HEAD
 
+## 1.0.5 2023-08-16
+*   ioutil deprecated as of go 1.16. use io.Discard instead.
+
 ## 1.0.4 2021-05-28
 *   change test only dependency (test helper functions)
 
