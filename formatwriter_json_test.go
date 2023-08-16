@@ -13,11 +13,6 @@ import (
 	is "gotest.tools/v3/assert/cmp"
 )
 
-func testEncodeString(e byteSliceWriter, s string) {
-	encoder := json.NewEncoder(e)
-	encoder.Encode(s)
-}
-
 func TestFormatWriterJSONEncodeString(t *testing.T) {
 	var jsonStringTests = map[string]string{
 		"generic":           `test`,
