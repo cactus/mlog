@@ -5,12 +5,12 @@
 package mlog
 
 import (
-	"io/ioutil"
+	"io"
 	"testing"
 )
 
 func BenchmarkFormatWriterStructuredBase(b *testing.B) {
-	logger := New(ioutil.Discard, 0)
+	logger := New(io.Discard, 0)
 	logWriter := &FormatWriterStructured{}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
@@ -19,7 +19,7 @@ func BenchmarkFormatWriterStructuredBase(b *testing.B) {
 }
 
 func BenchmarkFormatWriterStructuredStd(b *testing.B) {
-	logger := New(ioutil.Discard, Lstd)
+	logger := New(io.Discard, Lstd)
 	logWriter := &FormatWriterStructured{}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
@@ -28,7 +28,7 @@ func BenchmarkFormatWriterStructuredStd(b *testing.B) {
 }
 
 func BenchmarkFormatWriterStructuredTime(b *testing.B) {
-	logger := New(ioutil.Discard, Ltimestamp)
+	logger := New(io.Discard, Ltimestamp)
 	logWriter := &FormatWriterStructured{}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
@@ -37,7 +37,7 @@ func BenchmarkFormatWriterStructuredTime(b *testing.B) {
 }
 
 func BenchmarkFormatWriterStructuredTimeTAI64N(b *testing.B) {
-	logger := New(ioutil.Discard, Ltai64n)
+	logger := New(io.Discard, Ltai64n)
 	logWriter := &FormatWriterStructured{}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
@@ -46,7 +46,7 @@ func BenchmarkFormatWriterStructuredTimeTAI64N(b *testing.B) {
 }
 
 func BenchmarkFormatWriterStructuredShortfile(b *testing.B) {
-	logger := New(ioutil.Discard, Lshortfile)
+	logger := New(io.Discard, Lshortfile)
 	logWriter := &FormatWriterStructured{}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
@@ -55,7 +55,7 @@ func BenchmarkFormatWriterStructuredShortfile(b *testing.B) {
 }
 
 func BenchmarkFormatWriterStructuredLongfile(b *testing.B) {
-	logger := New(ioutil.Discard, Llongfile)
+	logger := New(io.Discard, Llongfile)
 	logWriter := &FormatWriterStructured{}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
@@ -64,7 +64,7 @@ func BenchmarkFormatWriterStructuredLongfile(b *testing.B) {
 }
 
 func BenchmarkFormatWriterStructuredMap(b *testing.B) {
-	logger := New(ioutil.Discard, 0)
+	logger := New(io.Discard, 0)
 	logWriter := &FormatWriterStructured{}
 	m := Map{"x": 42}
 	b.ResetTimer()
@@ -74,7 +74,7 @@ func BenchmarkFormatWriterStructuredMap(b *testing.B) {
 }
 
 func BenchmarkFormatWriterStructuredHugeMapUnsorted(b *testing.B) {
-	logger := New(ioutil.Discard, 0)
+	logger := New(io.Discard, 0)
 	logWriter := &FormatWriterStructured{}
 	m := Map{}
 	for i := 1; i <= 100; i++ {
@@ -87,7 +87,7 @@ func BenchmarkFormatWriterStructuredHugeMapUnsorted(b *testing.B) {
 }
 
 func BenchmarkFormatWriterStructuredHugeMapSorted(b *testing.B) {
-	logger := New(ioutil.Discard, Lsort)
+	logger := New(io.Discard, Lsort)
 	logWriter := &FormatWriterStructured{}
 	m := Map{}
 	for i := 1; i <= 100; i++ {

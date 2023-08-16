@@ -6,19 +6,16 @@ package mlog
 
 import (
 	"bytes"
-	"flag"
 	"fmt"
-	"io/ioutil"
-	"path/filepath"
+	"io"
 	"testing"
 	"time"
 
 	"gotest.tools/v3/assert"
 	is "gotest.tools/v3/assert/cmp"
 	"gotest.tools/v3/assert/opt"
+	"gotest.tools/v3/golden"
 )
-
-var update = flag.Bool("update", false, "update golden files")
 
 func assertPanic(t *testing.T, f func()) {
 	defer func() {
@@ -48,7 +45,7 @@ func TestLoggerMsgs(t *testing.T) {
 	}
 
 	buf := &bytes.Buffer{}
-	logger := New(ioutil.Discard, Llevel|Lsort)
+	logger := New(io.Discard, Llevel|Lsort)
 	logger.out = buf
 
 	for name, tt := range infoTests {
@@ -90,13 +87,9 @@ func TestLoggerMsgs(t *testing.T) {
 			t.Errorf("%s: not sure what to do", name)
 			continue
 		}
-		actual := buf.Bytes()
-		golden := filepath.Join("test-fixtures", fmt.Sprintf("test_logger_msgs.%s.golden", name))
-		if *update {
-			ioutil.WriteFile(golden, actual, 0644)
-		}
-		expected, _ := ioutil.ReadFile(golden)
-		assert.Check(t, is.Equal(string(expected), string(actual)), "%s: did not match expectation", name)
+
+		goldenFixture := fmt.Sprintf("test_logger_msgs.%s.golden", name)
+		assert.Check(t, golden.Bytes(buf.Bytes(), goldenFixture), "%s: did not match expectation", name)
 	}
 
 }
@@ -149,7 +142,7 @@ func TestPanics(t *testing.T) {
 	}
 
 	buf := &bytes.Buffer{}
-	logger := New(ioutil.Discard, Llevel|Lsort)
+	logger := New(io.Discard, Llevel|Lsort)
 	logger.out = buf
 
 	for name, tt := range infoTests {
@@ -179,12 +172,7 @@ func TestPanics(t *testing.T) {
 			continue
 		}
 
-		actual := buf.Bytes()
-		golden := filepath.Join("test-fixtures", fmt.Sprintf("test_logger_msgs.%s.golden", name))
-		if *update {
-			ioutil.WriteFile(golden, actual, 0644)
-		}
-		expected, _ := ioutil.ReadFile(golden)
-		assert.Check(t, is.Equal(string(expected), string(actual)), "%s: did not match expectation", name)
+		goldenFixture := fmt.Sprintf("test_logger_msgs.%s.golden", name)
+		assert.Check(t, golden.Bytes(buf.Bytes(), goldenFixture), "%s: did not match expectation", name)
 	}
 }

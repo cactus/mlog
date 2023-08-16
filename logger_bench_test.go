@@ -5,7 +5,7 @@
 package mlog
 
 import (
-	"io/ioutil"
+	"io"
 	"log"
 	"math/rand"
 	"testing"
@@ -42,7 +42,7 @@ func randString(n int, altchars bool) string {
 }
 
 func BenchmarkLoggingDebugWithDisabled(b *testing.B) {
-	logger := New(ioutil.Discard, 0)
+	logger := New(io.Discard, 0)
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		logger.Debug("this is a test")
@@ -50,7 +50,7 @@ func BenchmarkLoggingDebugWithDisabled(b *testing.B) {
 }
 
 func BenchmarkLoggingDebugWithEnabled(b *testing.B) {
-	logger := New(ioutil.Discard, Ldebug)
+	logger := New(io.Discard, Ldebug)
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		logger.Debug("this is a test")
@@ -58,7 +58,7 @@ func BenchmarkLoggingDebugWithEnabled(b *testing.B) {
 }
 
 func BenchmarkLoggingLikeStdlib(b *testing.B) {
-	logger := New(ioutil.Discard, Lstd)
+	logger := New(io.Discard, Lstd)
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		logger.Info("this is a test")
@@ -66,7 +66,7 @@ func BenchmarkLoggingLikeStdlib(b *testing.B) {
 }
 
 func BenchmarkLoggingStdlibLog(b *testing.B) {
-	logger := log.New(ioutil.Discard, "info: ", log.LstdFlags)
+	logger := log.New(io.Discard, "info: ", log.LstdFlags)
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		logger.Print("this is a test")
@@ -74,7 +74,7 @@ func BenchmarkLoggingStdlibLog(b *testing.B) {
 }
 
 func BenchmarkLoggingLikeStdlibShortfile(b *testing.B) {
-	logger := New(ioutil.Discard, Lstd|Lshortfile)
+	logger := New(io.Discard, Lstd|Lshortfile)
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		logger.Info("this is a test")
@@ -82,7 +82,7 @@ func BenchmarkLoggingLikeStdlibShortfile(b *testing.B) {
 }
 
 func BenchmarkLoggingStdlibLogShortfile(b *testing.B) {
-	logger := log.New(ioutil.Discard, "info: ", log.LstdFlags|log.Lshortfile)
+	logger := log.New(io.Discard, "info: ", log.LstdFlags|log.Lshortfile)
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		logger.Print("this is a test")
@@ -90,7 +90,7 @@ func BenchmarkLoggingStdlibLogShortfile(b *testing.B) {
 }
 
 func BenchmarkLoggingParallelLikeStdlib(b *testing.B) {
-	logger := New(ioutil.Discard, Lstd)
+	logger := New(io.Discard, Lstd)
 	b.ResetTimer()
 	b.RunParallel(func(pb *testing.PB) {
 		for pb.Next() {
@@ -100,7 +100,7 @@ func BenchmarkLoggingParallelLikeStdlib(b *testing.B) {
 }
 
 func BenchmarkLoggingParallelStdlibLog(b *testing.B) {
-	logger := log.New(ioutil.Discard, "info: ", log.LstdFlags)
+	logger := log.New(io.Discard, "info: ", log.LstdFlags)
 	b.ResetTimer()
 	b.RunParallel(func(pb *testing.PB) {
 		for pb.Next() {

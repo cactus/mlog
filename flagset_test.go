@@ -2,12 +2,12 @@ package mlog
 
 import (
 	"fmt"
-	"io/ioutil"
+	"io"
 	"testing"
 )
 
 func TestFlagSet(t *testing.T) {
-	logger := New(ioutil.Discard, 0)
+	logger := New(io.Discard, 0)
 
 	expected := Ltimestamp | Ldebug
 	logger.SetFlags(expected)
