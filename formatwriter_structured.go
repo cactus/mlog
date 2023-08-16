@@ -8,7 +8,8 @@ import (
 
 // FormatWriterStructured writes a plain text structured log line.
 // Example:
-//   time="2016-04-29T20:49:12Z" level="I" msg="this is a log"
+//
+//	time="2016-04-29T20:49:12Z" level="I" msg="this is a log"
 type FormatWriterStructured struct{}
 
 // Emit constructs and formats a plain text log line, then writes it to logger
@@ -72,7 +73,7 @@ func (l *FormatWriterStructured) Emit(logger *Logger, level int, message string,
 	encodeStringStructured(sb, message)
 	sb.WriteByte('"')
 
-	if extra != nil && len(extra) > 0 {
+	if len(extra) > 0 {
 		sb.WriteByte(' ')
 		if flags&Lsort != 0 {
 			extra.sortedWriteBuf(sb)

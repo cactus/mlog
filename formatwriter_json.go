@@ -11,7 +11,8 @@ const hex = "0123456789abcdef"
 
 // FormatWriterJSON writes a json structured log line.
 // Example:
-//   {"time": "2016-04-29T20:49:12Z", "level": "I", "msg": "this is a log"}
+//
+//	{"time": "2016-04-29T20:49:12Z", "level": "I", "msg": "this is a log"}
 type FormatWriterJSON struct{}
 
 // Emit constructs and formats a json log line, then writes it to logger
@@ -76,7 +77,7 @@ func (j *FormatWriterJSON) Emit(logger *Logger, level int, message string, extra
 	encodeStringJSON(sb, message)
 	sb.WriteByte('"')
 
-	if extra != nil && len(extra) > 0 {
+	if len(extra) > 0 {
 		sb.WriteString(`, "extra": {`)
 		encodeLogMapJSON(sb, extra)
 		sb.WriteByte('}')
