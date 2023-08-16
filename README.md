@@ -8,7 +8,7 @@ mlog
 
 ## About
 
-A purposefully basic logging library for Go.
+A purposefully basic logging library for Go (`>= 1.16`).
 
 mlog only has 3 logging levels: Debug, Info, and Fatal.
 
