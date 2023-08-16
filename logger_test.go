@@ -89,7 +89,7 @@ func TestLoggerMsgs(t *testing.T) {
 		}
 
 		goldenFixture := fmt.Sprintf("test_logger_msgs.%s.golden", name)
-		assert.Check(t, golden.Bytes(buf.Bytes(), goldenFixture), "%s: did not match expectation", name)
+		golden.AssertBytes(t, buf.Bytes(), goldenFixture, "%s: did not match expectation", name)
 	}
 
 }
@@ -173,6 +173,6 @@ func TestPanics(t *testing.T) {
 		}
 
 		goldenFixture := fmt.Sprintf("test_logger_msgs.%s.golden", name)
-		assert.Check(t, golden.Bytes(buf.Bytes(), goldenFixture), "%s: did not match expectation", name)
+		golden.AssertBytes(t, buf.Bytes(), goldenFixture, "%s: did not match expectation", name)
 	}
 }
