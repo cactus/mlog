@@ -2,6 +2,7 @@ Changelog
 =========
 
 ## HEAD
+*   add `SetOutput` and method
 
 ## 1.0.5 2023-08-16
 *   ioutil deprecated as of go 1.16. use io.Discard instead.

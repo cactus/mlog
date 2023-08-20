@@ -26,6 +26,7 @@ type Logger struct {
 	flags uint64
 }
 
+// SetOutput sets the Logger output io.Writer
 func (l *Logger) SetOutput(writer io.Writer) {
 	// lock writing to serialize log output (no scrambled log lines)
 	l.mu.Lock()
