@@ -26,6 +26,13 @@ type Logger struct {
 	flags uint64
 }
 
+func (l *Logger) SetOutput(writer io.Writer) {
+	// lock writing to serialize log output (no scrambled log lines)
+	l.mu.Lock()
+	defer l.mu.Unlock()
+	l.out = writer
+}
+
 func (l *Logger) Write(b []byte) (int, error) {
 	// lock writing to serialize log output (no scrambled log lines)
 	l.mu.Lock()

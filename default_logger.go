@@ -2,11 +2,16 @@ package mlog
 
 import (
 	"fmt"
+	"io"
 	"os"
 )
 
 // DefaultLogger is the default package level Logger
 var DefaultLogger = New(os.Stderr, Lstd)
+
+func SetOutput(writer io.Writer) {
+	DefaultLogger.SetOutput(writer)
+}
 
 // SetEmitter sets the Emitter for the degault logger. See
 // Logger.SetEmitter.
