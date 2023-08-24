@@ -15,6 +15,7 @@ import (
 // Emitter is the interface implemented by mlog logging format writers.
 type Emitter interface {
 	Emit(logger *Logger, level int, message string, extra Map)
+	EmitAttrs(logger *Logger, level int, message string, extra ...*Attr)
 }
 
 // A Logger represents a logging object, that embeds log.Logger, and
@@ -46,6 +47,11 @@ func (l *Logger) Emit(level int, message string, extra Map) {
 	l.e.Emit(l, level, message, extra)
 }
 
+// Emit invokes the FormatWriter and logs the event.
+func (l *Logger) EmitAttrs(level int, message string, extra ...*Attr) {
+	l.e.EmitAttrs(l, level, message, extra...)
+}
+
 // SetEmitter sets the Emitter
 func (l *Logger) SetEmitter(e Emitter) {
 	l.mu.Lock()
@@ -68,6 +74,38 @@ func (l *Logger) SetFlags(flags FlagSet) {
 func (l *Logger) HasDebug() bool {
 	flags := FlagSet(atomic.LoadUint64(&l.flags))
 	return flags&Ldebug != 0
+}
+
+// Debugx conditionally logs message and any Attr elements at level="debug".
+// If the Logger does not have the Ldebug flag, nothing is logged.
+func (l *Logger) Debugx(message string, attrs ...*Attr) {
+	if l.HasDebug() {
+		l.EmitAttrs(-1, message, attrs...)
+	}
+}
+
+// Infox logs message and any Map elements at level="info".
+func (l *Logger) Infox(message string, attrs ...*Attr) {
+	l.EmitAttrs(0, message, attrs...)
+}
+
+// Printx logs message and any Map elements at level="info".
+func (l *Logger) Printx(message string, attrs ...*Attr) {
+	l.EmitAttrs(0, message, attrs...)
+}
+
+// Fatalx logs message and any Map elements at level="fatal", then calls
+// os.Exit(1)
+func (l *Logger) Fatalx(message string, attrs ...*Attr) {
+	l.EmitAttrs(1, message, attrs...)
+	os.Exit(1)
+}
+
+// Panicx logs message and any Map elements at level="fatal", then calls
+// panic().
+func (l *Logger) Panicx(message string, attrs ...*Attr) {
+	l.EmitAttrs(1, message, attrs...)
+	panic(message)
 }
 
 // Debugm conditionally logs message and any Map elements at level="debug".

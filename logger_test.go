@@ -33,15 +33,21 @@ func TestLoggerMsgs(t *testing.T) {
 		message string
 		extra   interface{}
 	}{
-		"infom1": {Llevel | Lsort, "infom", "test", Map{"x": "y"}},
-		"infom2": {Llevel | Lsort, "infom", "test", Map{"x": "y", "y": "z", "t": "u", "u": "v"}},
-		"infom3": {Llevel | Lsort, "infom", "test", Map{"y": "z", "x": "y", "u": "v", "t": "u"}},
-		"infom4": {Llevel | Lsort, "infom", "test", Map{"x": 1, "y": 2, "z": 3, "haz_string": "such tests"}},
-		"debug1": {Llevel | Lsort | Ldebug, "debugm", "test", nil},
-		"debug2": {Llevel | Lsort | Ldebug, "debugm", "test", nil},
-		"infof1": {Llevel, "infof", "test: %d", 5},
-		"infof2": {Llevel, "infof", "test: %s", "test"},
-		"infof3": {Llevel, "infof", "test: %s %s", []interface{}{"test", "pickles"}},
+		"infom1":  {Llevel | Lsort, "infom", "test", Map{"x": "y"}},
+		"infom2":  {Llevel | Lsort, "infom", "test", Map{"x": "y", "y": "z", "t": "u", "u": "v"}},
+		"infom3":  {Llevel | Lsort, "infom", "test", Map{"y": "z", "x": "y", "u": "v", "t": "u"}},
+		"infom4":  {Llevel | Lsort, "infom", "test", Map{"x": 1, "y": 2, "z": 3, "haz_string": "such tests"}},
+		"debug1":  {Llevel | Lsort | Ldebug, "debugm", "test", nil},
+		"debug2":  {Llevel | Lsort | Ldebug, "debugm", "test", nil},
+		"infof1":  {Llevel, "infof", "test: %d", 5},
+		"infof2":  {Llevel, "infof", "test: %s", "test"},
+		"infof3":  {Llevel, "infof", "test: %s %s", []interface{}{"test", "pickles"}},
+		"infox1":  {Llevel, "infox", "test", []*Attr{{"x", "y"}}},
+		"infox2":  {Llevel, "infox", "test", []*Attr{{"x", "y"}, {"y", "z"}}},
+		"infox3":  {Llevel, "infox", "test", nil},
+		"debugx1": {Llevel | Ldebug, "debugx", "test", []*Attr{{"x", "y"}}},
+		"debugx2": {Llevel | Ldebug, "debugx", "test", []*Attr{{"x", "y"}, {"y", "z"}}},
+		"debugx3": {Llevel | Ldebug, "debugx", "test", nil},
 	}
 
 	buf := &bytes.Buffer{}
@@ -53,6 +59,20 @@ func TestLoggerMsgs(t *testing.T) {
 		logger.flags = uint64(tt.flags)
 
 		switch tt.method {
+		case "debugx":
+			m, ok := tt.extra.([]*Attr)
+			if !ok && tt.extra != nil {
+				t.Errorf("%s: failed type assertion", name)
+				continue
+			}
+			logger.Debugx(tt.message, m...)
+		case "infox":
+			m, ok := tt.extra.([]*Attr)
+			if !ok && tt.extra != nil {
+				t.Errorf("%s: failed type assertion", name)
+				continue
+			}
+			logger.Infox(tt.message, m...)
 		case "debugm":
 			m, ok := tt.extra.(Map)
 			if !ok && tt.extra != nil {

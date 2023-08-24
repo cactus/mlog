@@ -35,6 +35,35 @@ func HasDebug() bool {
 	return DefaultLogger.HasDebug()
 }
 
+// Debugx logs to the default Logger. See Logger.Debugm
+func Debugx(message string, attrs ...*Attr) {
+	if DefaultLogger.HasDebug() {
+		DefaultLogger.EmitAttrs(-1, message, attrs...)
+	}
+}
+
+// Infox logs to the default Logger. See Logger.Infom
+func Infox(message string, attrs ...*Attr) {
+	DefaultLogger.EmitAttrs(0, message, attrs...)
+}
+
+// Printx logs to the default Logger. See Logger.Printm
+func Printx(message string, attrs ...*Attr) {
+	DefaultLogger.EmitAttrs(0, message, attrs...)
+}
+
+// Fatalx logs to the default Logger. See Logger.Fatalm
+func Fatalx(message string, attrs ...*Attr) {
+	DefaultLogger.EmitAttrs(1, message, attrs...)
+	os.Exit(1)
+}
+
+// Panicx logs to the default Logger. See Logger.Panicm
+func Panicx(message string, attrs ...*Attr) {
+	DefaultLogger.EmitAttrs(1, message, attrs...)
+	panic(message)
+}
+
 // Debugm logs to the default Logger. See Logger.Debugm
 func Debugm(message string, v Map) {
 	if DefaultLogger.HasDebug() {
@@ -60,7 +89,8 @@ func Fatalm(message string, v Map) {
 
 // Panicm logs to the default Logger. See Logger.Panicm
 func Panicm(message string, v Map) {
-	DefaultLogger.Panicm(message, v)
+	DefaultLogger.Emit(1, message, v)
+	panic(message)
 }
 
 // Debugf logs to the default Logger. See Logger.Debugf
@@ -89,7 +119,9 @@ func Fatalf(format string, v ...interface{}) {
 // Panicf is equivalent to Printf() followed by a call to panic().
 // See Logger.Panicf
 func Panicf(format string, v ...interface{}) {
-	DefaultLogger.Panicf(format, v...)
+	s := fmt.Sprintf(format, v...)
+	DefaultLogger.Emit(1, s, nil)
+	panic(s)
 }
 
 // Debug logs to the default Logger. See Logger.Debug
@@ -118,5 +150,7 @@ func Fatal(v ...interface{}) {
 // Panic is equivalent to Print() followed by a call to panic().
 // See Logger.Panic
 func Panic(v ...interface{}) {
-	DefaultLogger.Panic(v...)
+	s := fmt.Sprint(v...)
+	DefaultLogger.Emit(1, s, nil)
+	panic(s)
 }
