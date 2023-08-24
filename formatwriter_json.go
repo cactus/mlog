@@ -15,7 +15,82 @@ const hex = "0123456789abcdef"
 //	{"time": "2016-04-29T20:49:12Z", "level": "I", "msg": "this is a log"}
 type FormatWriterJSON struct{}
 
-// Emit constructs and formats a json log line, then writes it to logger
+// Emit constructs and formats a json log line (with optional extra Attrs), then writes it to logger
+func (j *FormatWriterJSON) EmitAttrs(logger *Logger, level int, message string, extra ...*Attr) {
+	sb := bufPool.Get()
+	defer bufPool.Put(sb)
+
+	flags := logger.Flags()
+
+	sb.WriteByte('{')
+	// if time is being logged, handle time as soon as possible
+	if flags&(Ltimestamp|Ltai64n) != 0 {
+		t := time.Now()
+		sb.WriteString(`"time": "`)
+		if flags&Ltai64n != 0 {
+			writeTimeTAI64N(sb, &t, flags)
+		} else {
+			writeTime(sb, &t, flags)
+		}
+		sb.WriteString(`", `)
+	}
+
+	if flags&Llevel != 0 {
+		sb.WriteString(`"level": "`)
+		switch level {
+		case -1:
+			sb.WriteByte('D')
+		case 1:
+			sb.WriteByte('F')
+		default:
+			sb.WriteByte('I')
+		}
+		sb.WriteString(`", `)
+	}
+
+	if flags&(Lshortfile|Llongfile) != 0 {
+		_, file, line, ok := runtime.Caller(3)
+		if !ok {
+			file = "???"
+			line = 0
+		}
+
+		if flags&Lshortfile != 0 {
+			short := file
+			for i := len(file) - 1; i > 0; i-- {
+				if file[i] == '/' {
+					short = file[i+1:]
+					break
+				}
+			}
+			file = short
+		}
+
+		sb.WriteString(`"caller": "`)
+		sb.WriteString(file)
+		sb.WriteByte(':')
+		sb.AppendIntWidth(line, 0)
+		sb.WriteString(`", `)
+	}
+
+	sb.WriteString(`"msg": "`)
+	encodeStringJSON(sb, message)
+	sb.WriteByte('"')
+
+	if len(extra) > 0 {
+		attrs := filterAttrs(extra)
+		if len(attrs) > 0 {
+			sb.WriteString(`, "extra": `)
+			encodeLogAttrsJSON(sb, attrs)
+		}
+	}
+
+	sb.WriteByte('}')
+	sb.WriteByte('\n')
+	sb.WriteTo(logger)
+}
+
+// Emit constructs and formats a json log line (with nillable extra Map), then writes it to logger
 func (j *FormatWriterJSON) Emit(logger *Logger, level int, message string, extra Map) {
 	sb := bufPool.Get()
 	defer bufPool.Put(sb)
@@ -78,9 +153,8 @@ func (j *FormatWriterJSON) Emit(logger *Logger, level int, message string, extra
 	sb.WriteByte('"')
 
 	if len(extra) > 0 {
-		sb.WriteString(`, "extra": {`)
+		sb.WriteString(`, "extra": `)
 		encodeLogMapJSON(sb, extra)
-		sb.WriteByte('}')
 	}
 
 	sb.WriteByte('}')
@@ -90,6 +164,7 @@ func (j *FormatWriterJSON) Emit(logger *Logger, level int, message string, extra
 
 func encodeLogMapJSON(w byteSliceWriter, m Map) {
 	first := true
+	w.WriteByte('{')
 	for k, v := range m {
 		if first {
 			first = false
@@ -103,6 +178,23 @@ func encodeLogMapJSON(w byteSliceWriter, m Map) {
 		encodeStringJSON(w, fmt.Sprint(v))
 		w.WriteByte('"')
 	}
+	w.WriteByte('}')
+}
+
+func encodeLogAttrsJSON(w byteSliceWriter, attrs []*Attr) {
+	w.WriteByte('{')
+	attrsLen := len(attrs)
+	for i, attr := range attrs {
+		w.WriteByte('"')
+		encodeStringJSON(w, attr.Key)
+		w.WriteString(`": "`)
+		encodeStringJSON(w, fmt.Sprint(attr.Value))
+		w.WriteByte('"')
+		if i != attrsLen-1 {
+			w.WriteString(`, `)
+		}
+	}
+	w.WriteByte('}')
 }
 
 // modified from Go stdlib: encoding/json/encode.go:787-862 (approx)

@@ -73,6 +73,16 @@ func BenchmarkFormatWriterStructuredMap(b *testing.B) {
 	}
 }
 
+func BenchmarkFormatWriterStructuredAttrs(b *testing.B) {
+	logger := New(io.Discard, 0)
+	logWriter := &FormatWriterStructured{}
+	attr := Attr{"x", 42}
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		logWriter.EmitAttrs(logger, 0, "this is a test", &attr)
+	}
+}
+
 func BenchmarkFormatWriterStructuredHugeMapUnsorted(b *testing.B) {
 	logger := New(io.Discard, 0)
 	logWriter := &FormatWriterStructured{}
@@ -96,5 +106,18 @@ func BenchmarkFormatWriterStructuredHugeMapSorted(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		logWriter.Emit(logger, 0, "this is a test", m)
+	}
+}
+
+func BenchmarkFormatWriterStructuredHugeAttrs(b *testing.B) {
+	logger := New(io.Discard, Lsort)
+	logWriter := &FormatWriterStructured{}
+	attrs := make([]*Attr, 0, 100)
+	for i := 1; i <= 100; i++ {
+		attrs = append(attrs, &Attr{randString(6, false), randString(10, false)})
+	}
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		logWriter.EmitAttrs(logger, 0, "this is a test", attrs...)
 	}
 }

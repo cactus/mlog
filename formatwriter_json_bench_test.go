@@ -73,6 +73,16 @@ func BenchmarkFormatWriterJSONMap(b *testing.B) {
 	}
 }
 
+func BenchmarkFormatWriterJSONAttrs(b *testing.B) {
+	logger := New(io.Discard, 0)
+	logWriter := &FormatWriterJSON{}
+	attr := Attr{"x", 42}
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		logWriter.EmitAttrs(logger, 0, "this is a test", &attr)
+	}
+}
+
 func BenchmarkFormatWriterJSONHugeMap(b *testing.B) {
 	logger := New(io.Discard, 0)
 	logWriter := &FormatWriterJSON{}
@@ -83,5 +93,18 @@ func BenchmarkFormatWriterJSONHugeMap(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		logWriter.Emit(logger, 0, "this is a test", m)
+	}
+}
+
+func BenchmarkFormatWriterJSONHugeAttrs(b *testing.B) {
+	logger := New(io.Discard, 0)
+	logWriter := &FormatWriterJSON{}
+	attrs := make([]*Attr, 0, 100)
+	for i := 1; i <= 100; i++ {
+		attrs = append(attrs, &Attr{randString(6, false), randString(10, false)})
+	}
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		logWriter.EmitAttrs(logger, 0, "this is a test", attrs...)
 	}
 }

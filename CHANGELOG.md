@@ -3,6 +3,9 @@ Changelog
 
 ## HEAD
 
+## 1.0.7 2023-08-23
+*   add `EmitAttrs` and `Attrs` functionality.
+
 ## 1.0.6 2023-08-19
 *   add `SetOutput` and method
 
