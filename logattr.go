@@ -11,6 +11,10 @@ type Attr struct {
 	Value interface{}
 }
 
+func A(key string, value interface{}) *Attr {
+	return &Attr{key, value}
+}
+
 func (attr *Attr) writeBuf(w byteSliceWriter) {
 	if attr == nil {
 		return
@@ -57,6 +61,13 @@ func (attr *Attr) writeBuf(w byteSliceWriter) {
 	buf.Truncate(0)
 }
 
+func (attr *Attr) String() string {
+	buf := bufPool.Get()
+	defer bufPool.Put(buf)
+	attr.writeBuf(buf)
+	return buf.String()
+}
+
 func attrsWriteBuf(w byteSliceWriter, attrs []*Attr) {
 	attrsLen := len(attrs)
 	for i, attr := range filterAttrs(attrs) {
@@ -86,11 +97,4 @@ func filterAttrs(attrs []*Attr) []*Attr {
 		}
 	}
 	return filteredAttrs
-}
-
-func (attr *Attr) String() string {
-	buf := bufPool.Get()
-	defer bufPool.Put(buf)
-	attr.writeBuf(buf)
-	return buf.String()
 }
