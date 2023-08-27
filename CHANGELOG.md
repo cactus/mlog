@@ -3,6 +3,9 @@ Changelog
 
 ## HEAD
 
+## 1.0.10 2023-08-27
+*   add TestingLogWriter helper bridge to `TB.Log*` 
+
 ## 1.0.9 2023-08-23
 *   fixes
 

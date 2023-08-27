@@ -1,7 +1,6 @@
 package mlog
 
 import (
-	"fmt"
 	"io"
 	"testing"
 )
@@ -12,7 +11,7 @@ func TestFlagSet(t *testing.T) {
 	expected := Ltimestamp | Ldebug
 	logger.SetFlags(expected)
 	flags := logger.Flags()
-	fmt.Println(flags)
+	t.Log(flags)
 	if flags&(expected) == 0 {
 		t.Errorf("flags did not match\n%12s %#v\n%12s %#v",
 			"expected:", expected.GoString(),
