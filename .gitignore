@@ -1,4 +1,5 @@
 /bin
 /pkg
 /vendor/src
+/.tools
 *.py[co]

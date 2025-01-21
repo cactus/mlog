@@ -40,8 +40,8 @@ func TestTime(t *testing.T) {
 	b := &sliceBuffer{make([]byte, 0, 1024)}
 	for _, tc := range cases {
 		b.Truncate(0)
-		writeTime(b, &(tc.T), tc.F)
-		assert.Check(t, is.Equal(tc.R, b.String()), "time written incorrectly")
+		writeTime(b, &tc.T)
+		assert.Check(t, is.Equal(b.String(), tc.R), "time written incorrectly")
 	}
 }
 
@@ -77,7 +77,7 @@ func TestTimeTAI64N(t *testing.T) {
 	b := &sliceBuffer{make([]byte, 0, 1024)}
 	for _, tc := range cases {
 		b.Truncate(0)
-		writeTimeTAI64N(b, &(tc.T), tc.F)
+		writeTimeTAI64N(b, &(tc.T))
 		assert.Check(t, is.Equal(tc.R, b.String()), "time written incorrectly")
 	}
 }

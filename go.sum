@@ -1,5 +1,5 @@
-github.com/cactus/tai64 v1.0.2 h1:c5rm3aQ9z3b6Vva2LXRSICx/Rpu9rj4MHEzRG1g7dK0=
-github.com/cactus/tai64 v1.0.2/go.mod h1:gu5LAXd6eWwrRD/HPw+aTrJF5WkieYswRVLSNslKGg4=
+github.com/cactus/tai64 v1.0.3 h1:GKdl8U1VprATgD16ob7Vjn7k+0G+rodh9roOcobjb3I=
+github.com/cactus/tai64 v1.0.3/go.mod h1:Ciis5iTJ0/vRkbGsPqBvWTOtXbJdYobxVG/C4tSP9BY=
 github.com/google/go-cmp v0.5.9/go.mod h1:17dUlkBOakJ0+DkrSSNjCkIjxS6bF9zb3elmeNGIjoY=
 github.com/google/go-cmp v0.6.0 h1:ofyhxvXcZhMsU5ulbFiLKl/XBFqE1GSq7atu8tAmTRI=
 github.com/google/go-cmp v0.6.0/go.mod h1:17dUlkBOakJ0+DkrSSNjCkIjxS6bF9zb3elmeNGIjoY=

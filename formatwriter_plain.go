@@ -23,9 +23,9 @@ func (l *FormatWriterPlain) EmitAttrs(logger *Logger, level int, message string,
 	if flags&(Ltimestamp|Ltai64n) != 0 {
 		t := time.Now()
 		if flags&Ltai64n != 0 {
-			writeTimeTAI64N(sb, &t, flags)
+			writeTimeTAI64N(sb, &t)
 		} else {
-			writeTime(sb, &t, flags)
+			writeTime(sb, &t)
 		}
 		sb.WriteByte(' ')
 	}
@@ -87,9 +87,9 @@ func (l *FormatWriterPlain) Emit(logger *Logger, level int, message string, extr
 	if flags&(Ltimestamp|Ltai64n) != 0 {
 		t := time.Now()
 		if flags&Ltai64n != 0 {
-			writeTimeTAI64N(sb, &t, flags)
+			writeTimeTAI64N(sb, &t)
 		} else {
-			writeTime(sb, &t, flags)
+			writeTime(sb, &t)
 		}
 		sb.WriteByte(' ')
 	}

@@ -6,7 +6,7 @@ import (
 	"github.com/cactus/tai64"
 )
 
-func writeTime(sb intSliceWriter, t *time.Time, flags FlagSet) {
+func writeTime(sb intSliceWriter, t *time.Time) {
 	year, month, day := t.Date()
 	sb.AppendIntWidth(year, 4)
 	sb.WriteByte('-')
@@ -36,13 +36,14 @@ func writeTime(sb intSliceWriter, t *time.Time, flags FlagSet) {
 		} else {
 			sb.WriteByte('+')
 		}
-		sb.AppendIntWidth(offset/3600, 2)
+		offset := offset / 60
+		sb.AppendIntWidth(offset/60, 2)
 		sb.WriteByte(':')
-		sb.AppendIntWidth(offset%3600, 2)
+		sb.AppendIntWidth(offset%60, 2)
 	}
 }
 
-func writeTimeTAI64N(sb intSliceWriter, t *time.Time, flags FlagSet) {
+func writeTimeTAI64N(sb intSliceWriter, t *time.Time) {
 	tu := t.UTC()
 	tux := tu.Unix()
 	offset := tai64.GetOffsetUnix(tux)

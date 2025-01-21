@@ -28,9 +28,9 @@ func (j *FormatWriterJSON) EmitAttrs(logger *Logger, level int, message string, 
 		t := time.Now()
 		sb.WriteString(`"time": "`)
 		if flags&Ltai64n != 0 {
-			writeTimeTAI64N(sb, &t, flags)
+			writeTimeTAI64N(sb, &t)
 		} else {
-			writeTime(sb, &t, flags)
+			writeTime(sb, &t)
 		}
 		sb.WriteString(`", `)
 	}
@@ -103,9 +103,9 @@ func (j *FormatWriterJSON) Emit(logger *Logger, level int, message string, extra
 		t := time.Now()
 		sb.WriteString(`"time": "`)
 		if flags&Ltai64n != 0 {
-			writeTimeTAI64N(sb, &t, flags)
+			writeTimeTAI64N(sb, &t)
 		} else {
-			writeTime(sb, &t, flags)
+			writeTime(sb, &t)
 		}
 		sb.WriteString(`", `)
 	}

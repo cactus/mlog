@@ -46,8 +46,11 @@ type sliceBuffer struct {
 }
 
 func (sb *sliceBuffer) AppendIntWidth(i int, wid int) {
-	digits := 0
 	// write digits backwards (easier/faster)
+	if i < 0 {
+		sb.data = append(sb.data, '-')
+	}
+	digits := 0
 	for i >= 10 {
 		q := i / 10
 		sb.data = append(sb.data, byte('0'+i-q*10))
@@ -72,7 +75,13 @@ func (sb *sliceBuffer) AppendIntWidth(i int, wid int) {
 const hexdigits = "0123456789abcdefghijklmnopqrstuvwxyz"
 
 func (sb *sliceBuffer) AppendIntWidthHex(i int64, wid int) {
-	u := uint64(i)
+	var u uint64
+	if i < 0 {
+		sb.data = append(sb.data, '-')
+		u = uint64(-i)
+	} else {
+		u = uint64(i)
+	}
 
 	digits := 0
 	b := uint64(16)

@@ -36,6 +36,6 @@ func (lw *TestingLogWriter) Write(p []byte) (n int, err error) {
 		return 0, fmt.Errorf("got a nil testing.TBf")
 	}
 	lw.tb.Helper()
-	lw.tb.Logf(string(p))
+	lw.tb.Log(string(p))
 	return len(p), nil
 }
