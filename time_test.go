@@ -4,8 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"gotest.tools/v3/assert"
-	is "gotest.tools/v3/assert/cmp"
+	"github.com/dropwhile/assert"
 )
 
 func TestTime(t *testing.T) {
@@ -41,7 +40,7 @@ func TestTime(t *testing.T) {
 	for _, tc := range cases {
 		b.Truncate(0)
 		writeTime(b, &tc.T)
-		assert.Check(t, is.Equal(b.String(), tc.R), "time written incorrectly")
+		assert.Equal(t, b.String(), tc.R, "time written incorrectly")
 	}
 }
 
@@ -78,6 +77,6 @@ func TestTimeTAI64N(t *testing.T) {
 	for _, tc := range cases {
 		b.Truncate(0)
 		writeTimeTAI64N(b, &(tc.T))
-		assert.Check(t, is.Equal(tc.R, b.String()), "time written incorrectly")
+		assert.Equal(t, tc.R, b.String(), "time written incorrectly")
 	}
 }

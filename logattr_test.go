@@ -3,8 +3,7 @@ package mlog
 import (
 	"testing"
 
-	"gotest.tools/v3/assert"
-	is "gotest.tools/v3/assert/cmp"
+	"github.com/dropwhile/assert"
 )
 
 func BenchmarkLogAttrWriteBuf(b *testing.B) {
@@ -31,5 +30,5 @@ func TestLogAttrWriteTo(t *testing.T) {
 	attr.writeBuf(buf)
 	n := `test="this is \"a test\" of \t some \n a"`
 	l := buf.String()
-	assert.Check(t, is.Equal(n, l), "did not match")
+	assert.Equal(t, n, l, "did not match")
 }

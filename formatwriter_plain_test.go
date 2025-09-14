@@ -6,14 +6,14 @@ package mlog
 
 import (
 	"bytes"
+	"fmt"
 	"testing"
 
-	"gotest.tools/v3/assert"
-	is "gotest.tools/v3/assert/cmp"
+	"github.com/dropwhile/assert"
 )
 
 func TestFormatWriterPlainEncodeString(t *testing.T) {
-	var stringTests = map[string]struct {
+	stringTests := map[string]struct {
 		input  string
 		output string
 	}{
@@ -30,6 +30,6 @@ func TestFormatWriterPlainEncodeString(t *testing.T) {
 	for name, tt := range stringTests {
 		b.Truncate(0)
 		encodeStringPlain(b, tt.input)
-		assert.Check(t, is.DeepEqual([]byte(tt.output), b.Bytes()), "%s: did not match expectation", name)
+		assert.Equal(t, b.Bytes(), []byte(tt.output), fmt.Sprintf("%s: did not match expectation", name))
 	}
 }

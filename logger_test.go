@@ -11,9 +11,7 @@ import (
 	"testing"
 	"time"
 
-	"gotest.tools/v3/assert"
-	is "gotest.tools/v3/assert/cmp"
-	"gotest.tools/v3/assert/opt"
+	"github.com/dropwhile/assert"
 	"gotest.tools/v3/golden"
 )
 
@@ -27,7 +25,7 @@ func assertPanic(t *testing.T, f func()) {
 }
 
 func TestLoggerMsgs(t *testing.T) {
-	var infoTests = map[string]struct {
+	infoTests := map[string]struct {
 		flags   FlagSet
 		method  string
 		message string
@@ -111,7 +109,6 @@ func TestLoggerMsgs(t *testing.T) {
 		goldenFixture := fmt.Sprintf("test_logger_msgs.%s.golden", name)
 		golden.AssertBytes(t, buf.Bytes(), goldenFixture, "%s: did not match expectation", name)
 	}
-
 }
 
 func TestLoggerTimestamp(t *testing.T) {
@@ -123,8 +120,8 @@ func TestLoggerTimestamp(t *testing.T) {
 	logger.Info("test this")
 	ts := bytes.Split(buf.Bytes()[6:], []byte{'"'})[0]
 	tlog, err := time.Parse(time.RFC3339Nano, string(ts))
-	assert.Check(t, err, "Failed to parse time from log")
-	assert.Assert(t, is.DeepEqual(tnow, tlog, opt.TimeWithThreshold(2*time.Second)), "Time not even close")
+	assert.Nil(t, err, "Failed to parse time from log")
+	assert.True(t, tnow.Sub(tlog) < 2*time.Second, "Time not even close")
 
 	buf.Truncate(0)
 
@@ -134,8 +131,8 @@ func TestLoggerTimestamp(t *testing.T) {
 	logger.Info("test this")
 	ts = bytes.Split(buf.Bytes()[6:], []byte{'"'})[0]
 	tlog, err = time.Parse(time.RFC3339Nano, string(ts))
-	assert.Check(t, err, "Failed to parse time from log")
-	assert.Assert(t, is.DeepEqual(tnow, tlog, opt.TimeWithThreshold(2*time.Second)), "Time not even close")
+	assert.Nil(t, err, "Failed to parse time from log")
+	assert.True(t, tnow.Sub(tlog) < 2*time.Second, "Time not even close")
 
 	buf.Truncate(0)
 
@@ -145,12 +142,12 @@ func TestLoggerTimestamp(t *testing.T) {
 	logger.Info("test this")
 	ts = bytes.Split(buf.Bytes()[6:], []byte{'"'})[0]
 	tlog, err = time.Parse(time.RFC3339Nano, string(ts))
-	assert.Check(t, err, "Failed to parse time from log")
-	assert.Assert(t, is.DeepEqual(tnow, tlog, opt.TimeWithThreshold(2*time.Second)), "Time not even close")
+	assert.Nil(t, err, "Failed to parse time from log")
+	assert.True(t, tnow.Sub(tlog) < 2*time.Second, "Time not even close")
 }
 
 func TestPanics(t *testing.T) {
-	var infoTests = map[string]struct {
+	infoTests := map[string]struct {
 		flags   FlagSet
 		method  string
 		message string

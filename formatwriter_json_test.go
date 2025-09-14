@@ -7,11 +7,11 @@ package mlog
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io"
 	"testing"
 
-	"gotest.tools/v3/assert"
-	is "gotest.tools/v3/assert/cmp"
+	"github.com/dropwhile/assert"
 )
 
 var jsonStringTests = map[string]string{
@@ -28,15 +28,16 @@ func TestFormatWriterJSONEncodeStringMap(t *testing.T) {
 	b := &bytes.Buffer{}
 	for name, s := range jsonStringTests {
 		e, err := json.Marshal(s)
-		assert.Check(t, err, "%s: json marshal failed", name)
+		assert.Nil(t, err, fmt.Sprintf("%s: json marshal failed", name))
 
 		b.Truncate(0)
 		b.WriteByte('"')
 		encodeStringJSON(b, s)
 		b.WriteByte('"')
-		assert.Check(t, is.Equal(string(e), b.String()), "%s: did not match expectation", name)
+		assert.Equal(t, b.String(), string(e), fmt.Sprintf("%s: did not match expectation", name))
 	}
 }
+
 func TestFormatWriterJSONAttrsNil(t *testing.T) {
 	logger := New(io.Discard, 0)
 	logWriter := &FormatWriterJSON{}
