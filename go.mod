@@ -4,7 +4,7 @@ go 1.22.0
 
 require (
 	github.com/cactus/tai64 v1.0.3
-	github.com/dropwhile/assert v1.2.0
+	github.com/dropwhile/assert v1.3.0
 	gotest.tools/v3 v3.5.2
 )
 
