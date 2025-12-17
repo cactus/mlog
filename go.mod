@@ -1,3 +1,4 @@
+// Deprecated: moved to codeberg -- use codeberg.org/dropwhile/mlog instead.
 module github.com/cactus/mlog
 
 go 1.22.0
