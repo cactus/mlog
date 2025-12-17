@@ -1,10 +1,8 @@
 mlog
 ====
 
-[![Build Status](https://github.com/cactus/mlog/workflows/unit-tests/badge.svg)](https://github.com/cactus/mlog/actions)
-[![GoDoc](https://godoc.org/github.com/cactus/mlog?status.png)](https://godoc.org/github.com/cactus/mlog)
-[![Go Report Card](https://goreportcard.com/badge/cactus/mlog)](https://goreportcard.com/report/cactus/mlog)
-[![License](https://img.shields.io/github/license/cactus/mlog.svg)](https://github.com/cactus/mlog/blob/master/LICENSE.md)
+> [!IMPORTANT]
+> Moved to [codeberg](https://codeberg.org/dropwhile/mlog)!
 
 ## About
 
